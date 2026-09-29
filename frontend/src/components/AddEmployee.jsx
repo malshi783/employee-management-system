@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
+import "./AddEmployee.css";
 
 function AddEmployee() {
 
@@ -13,33 +14,35 @@ function AddEmployee() {
 
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+
 
     const handleSubmit = async (e) => {
+
         e.preventDefault();
 
         setMessage("");
         setError("");
+        setLoading(true);
 
         try {
 
             const response = await api.post("/users", {
-                name: name,
-                email: email,
-                password: password,
-                role: role
+                name,
+                email,
+                password,
+                role
             });
 
             console.log("Employee created:", response.data);
 
             setMessage("Employee created successfully!");
 
-            // Clear form
             setName("");
             setEmail("");
             setPassword("");
             setRole("EMPLOYEE");
 
-            // Go back to employee list after short delay
             setTimeout(() => {
                 navigate("/users");
             }, 1000);
@@ -49,189 +52,209 @@ function AddEmployee() {
             console.error("Error creating employee:", error);
 
             if (error.response) {
+
                 setError(
                     error.response.data?.message ||
                     error.response.data ||
                     "Failed to create employee."
                 );
+
             } else {
-                setError("Could not connect to the backend.");
+
+                setError(
+                    "Could not connect to the backend."
+                );
+
             }
+
+        } finally {
+
+            setLoading(false);
+
         }
     };
 
+
     return (
-        <div style={{
-            minHeight: "100vh",
-            backgroundColor: "#f5f7fb",
-            padding: "40px"
-        }}>
 
-            <div style={{
-                maxWidth: "700px",
-                margin: "0 auto",
-                backgroundColor: "white",
-                padding: "35px",
-                borderRadius: "12px",
-                boxShadow: "0 4px 20px rgba(0,0,0,0.08)"
-            }}>
+        <div className="add-employee-page">
 
-                <h1>Add Employee</h1>
+            <div className="add-employee-container">
 
-                <p>
-                    Create a new employee account
-                </p>
+                {/* Header */}
 
-                {message && (
-                    <div style={{
-                        padding: "12px",
-                        marginBottom: "20px",
-                        backgroundColor: "#d1fae5",
-                        color: "#047857",
-                        borderRadius: "6px"
-                    }}>
-                        {message}
-                    </div>
-                )}
+                <div className="form-header">
 
-                {error && (
-                    <div style={{
-                        padding: "12px",
-                        marginBottom: "20px",
-                        backgroundColor: "#fee2e2",
-                        color: "#b91c1c",
-                        borderRadius: "6px"
-                    }}>
-                        {error}
-                    </div>
-                )}
+                    <button
+                        className="back-button"
+                        onClick={() => navigate("/users")}
+                    >
+                        ← Employees
+                    </button>
 
-                <form onSubmit={handleSubmit}>
+                    <h1>
+                        Add Employee
+                    </h1>
 
-                    {/* Name */}
-                    <div style={{ marginBottom: "20px" }}>
-                        <label>
-                            <strong>Name</strong>
-                        </label>
+                    <p>
+                        Create a new employee account
+                    </p>
 
-                        <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Enter employee name"
-                            required
-                            style={{
-                                width: "100%",
-                                padding: "12px",
-                                marginTop: "8px",
-                                boxSizing: "border-box"
-                            }}
-                        />
-                    </div>
+                </div>
 
-                    {/* Email */}
-                    <div style={{ marginBottom: "20px" }}>
-                        <label>
-                            <strong>Email</strong>
-                        </label>
 
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Enter employee email"
-                            required
-                            style={{
-                                width: "100%",
-                                padding: "12px",
-                                marginTop: "8px",
-                                boxSizing: "border-box"
-                            }}
-                        />
-                    </div>
+                {/* Form Card */}
 
-                    {/* Password */}
-                    <div style={{ marginBottom: "20px" }}>
-                        <label>
-                            <strong>Password</strong>
-                        </label>
+                <div className="form-card">
 
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Enter password"
-                            minLength="6"
-                            required
-                            style={{
-                                width: "100%",
-                                padding: "12px",
-                                marginTop: "8px",
-                                boxSizing: "border-box"
-                            }}
-                        />
-                    </div>
+                    {message && (
 
-                    {/* Role */}
-                    <div style={{ marginBottom: "25px" }}>
-                        <label>
-                            <strong>Role</strong>
-                        </label>
+                        <div className="success-message">
+                            {message}
+                        </div>
 
-                        <select
-                            value={role}
-                            onChange={(e) => setRole(e.target.value)}
-                            style={{
-                                width: "100%",
-                                padding: "12px",
-                                marginTop: "8px"
-                            }}
-                        >
-                            <option value="EMPLOYEE">
-                                EMPLOYEE
-                            </option>
+                    )}
 
-                            <option value="ADMIN">
-                                ADMIN
-                            </option>
-                        </select>
-                    </div>
 
-                    {/* Buttons */}
-                    <div>
+                    {error && (
 
-                        <button
-                            type="submit"
-                            style={{
-                                padding: "12px 25px",
-                                marginRight: "10px",
-                                backgroundColor: "#2563eb",
-                                color: "white",
-                                border: "none",
-                                borderRadius: "6px",
-                                cursor: "pointer"
-                            }}
-                        >
-                            Add Employee
-                        </button>
+                        <div className="error-message">
+                            {error}
+                        </div>
 
-                        <button
-                            type="button"
-                            onClick={() => navigate("/users")}
-                            style={{
-                                padding: "12px 25px",
-                                backgroundColor: "#e5e7eb",
-                                border: "none",
-                                borderRadius: "6px",
-                                cursor: "pointer"
-                            }}
-                        >
-                            Cancel
-                        </button>
+                    )}
 
-                    </div>
 
-                </form>
+                    <form onSubmit={handleSubmit}>
+
+                        {/* Name */}
+
+                        <div className="form-group">
+
+                            <label htmlFor="name">
+                                Full Name
+                            </label>
+
+                            <input
+                                id="name"
+                                type="text"
+                                placeholder="Enter employee name"
+                                value={name}
+                                onChange={(e) =>
+                                    setName(e.target.value)
+                                }
+                                required
+                            />
+
+                        </div>
+
+
+                        {/* Email */}
+
+                        <div className="form-group">
+
+                            <label htmlFor="email">
+                                Email Address
+                            </label>
+
+                            <input
+                                id="email"
+                                type="email"
+                                placeholder="Enter employee email"
+                                value={email}
+                                onChange={(e) =>
+                                    setEmail(e.target.value)
+                                }
+                                required
+                            />
+
+                        </div>
+
+
+                        {/* Password */}
+
+                        <div className="form-group">
+
+                            <label htmlFor="password">
+                                Password
+                            </label>
+
+                            <input
+                                id="password"
+                                type="password"
+                                placeholder="Enter password"
+                                value={password}
+                                onChange={(e) =>
+                                    setPassword(e.target.value)
+                                }
+                                minLength="6"
+                                required
+                            />
+
+                            <small>
+                                Password must contain at least 6 characters.
+                            </small>
+
+                        </div>
+
+
+                        {/* Role */}
+
+                        <div className="form-group">
+
+                            <label htmlFor="role">
+                                Role
+                            </label>
+
+                            <select
+                                id="role"
+                                value={role}
+                                onChange={(e) =>
+                                    setRole(e.target.value)
+                                }
+                            >
+                                <option value="EMPLOYEE">
+                                    Employee
+                                </option>
+
+                                <option value="ADMIN">
+                                    Administrator
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        {/* Buttons */}
+
+                        <div className="form-actions">
+
+                            <button
+                                type="button"
+                                className="cancel-button"
+                                onClick={() => navigate("/users")}
+                            >
+                                Cancel
+                            </button>
+
+
+                            <button
+                                type="submit"
+                                className="create-button"
+                                disabled={loading}
+                            >
+                                {loading
+                                    ? "Creating..."
+                                    : "Create Employee"
+                                }
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
 
             </div>
 

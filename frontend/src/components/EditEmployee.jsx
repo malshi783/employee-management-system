@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../api/api";
+import "./EditEmployee.css";
 
 function EditEmployee() {
 
@@ -13,66 +14,88 @@ function EditEmployee() {
     const [role, setRole] = useState("EMPLOYEE");
 
     const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
 
-    // Load existing employee
+
+    // =========================
+    // LOAD EMPLOYEE
+    // =========================
+
     useEffect(() => {
 
-        const loadEmployee = async () => {
+        const fetchEmployee = async () => {
 
             try {
 
                 const response = await api.get(`/users/${id}`);
 
-                const employee = response.data;
+                const user = response.data;
 
-                setName(employee.name);
-                setEmail(employee.email);
-                setRole(employee.role);
+                setName(user.name || "");
+                setEmail(user.email || "");
+                setRole(user.role || "EMPLOYEE");
 
             } catch (error) {
 
-                console.error("Error loading employee:", error);
+                console.error(
+                    "Error loading employee:",
+                    error
+                );
 
-                if (error.response) {
-                    setError(
-                        error.response.data?.message ||
-                        error.response.data ||
-                        "Failed to load employee."
-                    );
-                } else {
-                    setError("Could not connect to the backend.");
-                }
+                setError(
+                    "Could not load employee information."
+                );
 
             } finally {
+
                 setLoading(false);
+
             }
         };
 
-        loadEmployee();
+        fetchEmployee();
 
     }, [id]);
 
 
-    // Update employee
+    // =========================
+    // UPDATE EMPLOYEE
+    // =========================
+
     const handleSubmit = async (e) => {
 
         e.preventDefault();
 
         setMessage("");
         setError("");
+        setSaving(true);
 
         try {
 
-            await api.put(`/users/${id}`, {
-                name: name,
-                email: email,
-                password: password,
-                role: role
-            });
+            const employeeData = {
+                name,
+                email,
+                role
+            };
 
-            setMessage("Employee updated successfully!");
+            // Only send password if user entered a new one
+            if (password.trim() !== "") {
+                employeeData.password = password;
+            }
+
+            await api.put(
+                `/users/${id}`,
+                employeeData
+            );
+
+            setMessage(
+                "Employee updated successfully!"
+            );
+
+            setPassword("");
 
             setTimeout(() => {
                 navigate("/users");
@@ -80,226 +103,262 @@ function EditEmployee() {
 
         } catch (error) {
 
-            console.error("Error updating employee:", error);
+            console.error(
+                "Error updating employee:",
+                error
+            );
 
             if (error.response) {
+
                 setError(
                     error.response.data?.message ||
                     error.response.data ||
                     "Failed to update employee."
                 );
+
             } else {
-                setError("Could not connect to the backend.");
+
+                setError(
+                    "Could not connect to the backend."
+                );
+
             }
+
+        } finally {
+
+            setSaving(false);
+
         }
     };
 
 
+    // =========================
+    // LOADING
+    // =========================
+
     if (loading) {
+
         return (
-            <div style={{
-                minHeight: "100vh",
-                backgroundColor: "#f5f7fb",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center"
-            }}>
-                <h2>Loading employee...</h2>
+
+            <div className="edit-employee-page">
+
+                <div className="edit-loading">
+
+                    <div className="loading-spinner"></div>
+
+                    <h2>
+                        Loading employee...
+                    </h2>
+
+                    <p>
+                        Please wait.
+                    </p>
+
+                </div>
+
             </div>
+
         );
     }
 
 
     return (
-        <div style={{
-            minHeight: "100vh",
-            backgroundColor: "#f5f7fb",
-            padding: "40px"
-        }}>
 
-            <div style={{
-                maxWidth: "700px",
-                margin: "0 auto",
-                backgroundColor: "white",
-                padding: "35px",
-                borderRadius: "12px",
-                boxShadow: "0 4px 20px rgba(0,0,0,0.08)"
-            }}>
+        <div className="edit-employee-page">
 
-                <h1>Edit Employee</h1>
+            <div className="edit-employee-container">
 
-                <p>
-                    Update employee account information
-                </p>
+                {/* Header */}
 
+                <div className="edit-header">
 
-                {message && (
-                    <div style={{
-                        padding: "12px",
-                        marginBottom: "20px",
-                        backgroundColor: "#d1fae5",
-                        color: "#047857",
-                        borderRadius: "6px"
-                    }}>
-                        {message}
-                    </div>
-                )}
+                    <button
+                        className="back-button"
+                        onClick={() => navigate("/users")}
+                    >
+                        ← Employees
+                    </button>
+
+                    <h1>
+                        Edit Employee
+                    </h1>
+
+                    <p>
+                        Update employee account information
+                    </p>
+
+                </div>
 
 
-                {error && (
-                    <div style={{
-                        padding: "12px",
-                        marginBottom: "20px",
-                        backgroundColor: "#fee2e2",
-                        color: "#b91c1c",
-                        borderRadius: "6px"
-                    }}>
-                        {error}
-                    </div>
-                )}
+                {/* Form Card */}
+
+                <div className="edit-form-card">
+
+                    {message && (
+
+                        <div className="success-message">
+                            {message}
+                        </div>
+
+                    )}
 
 
-                <form onSubmit={handleSubmit}>
+                    {error && (
 
-                    {/* Name */}
-                    <div style={{ marginBottom: "20px" }}>
+                        <div className="error-message">
+                            {error}
+                        </div>
 
-                        <label>
-                            <strong>Name</strong>
-                        </label>
-
-                        <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Enter employee name"
-                            required
-                            style={{
-                                width: "100%",
-                                padding: "12px",
-                                marginTop: "8px",
-                                boxSizing: "border-box"
-                            }}
-                        />
-
-                    </div>
+                    )}
 
 
-                    {/* Email */}
-                    <div style={{ marginBottom: "20px" }}>
+                    <form onSubmit={handleSubmit}>
 
-                        <label>
-                            <strong>Email</strong>
-                        </label>
+                        {/* Employee ID */}
 
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Enter employee email"
-                            required
-                            style={{
-                                width: "100%",
-                                padding: "12px",
-                                marginTop: "8px",
-                                boxSizing: "border-box"
-                            }}
-                        />
+                        <div className="employee-id-display">
 
-                    </div>
+                            <span>
+                                Employee ID
+                            </span>
+
+                            <strong>
+                                #{id}
+                            </strong>
+
+                        </div>
 
 
-                    {/* Password */}
-                    <div style={{ marginBottom: "20px" }}>
+                        {/* Name */}
 
-                        <label>
-                            <strong>New Password</strong>
-                        </label>
+                        <div className="form-group">
 
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Enter new password"
-                            minLength="6"
-                            required
-                            style={{
-                                width: "100%",
-                                padding: "12px",
-                                marginTop: "8px",
-                                boxSizing: "border-box"
-                            }}
-                        />
+                            <label htmlFor="name">
+                                Full Name
+                            </label>
 
-                    </div>
+                            <input
+                                id="name"
+                                type="text"
+                                value={name}
+                                onChange={(e) =>
+                                    setName(e.target.value)
+                                }
+                                placeholder="Enter employee name"
+                                required
+                            />
+
+                        </div>
 
 
-                    {/* Role */}
-                    <div style={{ marginBottom: "25px" }}>
+                        {/* Email */}
 
-                        <label>
-                            <strong>Role</strong>
-                        </label>
+                        <div className="form-group">
 
-                        <select
-                            value={role}
-                            onChange={(e) => setRole(e.target.value)}
-                            style={{
-                                width: "100%",
-                                padding: "12px",
-                                marginTop: "8px"
-                            }}
-                        >
+                            <label htmlFor="email">
+                                Email Address
+                            </label>
 
-                            <option value="EMPLOYEE">
-                                EMPLOYEE
-                            </option>
+                            <input
+                                id="email"
+                                type="email"
+                                value={email}
+                                onChange={(e) =>
+                                    setEmail(e.target.value)
+                                }
+                                placeholder="Enter employee email"
+                                required
+                            />
 
-                            <option value="ADMIN">
-                                ADMIN
-                            </option>
-
-                        </select>
-
-                    </div>
+                        </div>
 
 
-                    {/* Buttons */}
-                    <div>
+                        {/* Password */}
 
-                        <button
-                            type="submit"
-                            style={{
-                                padding: "12px 25px",
-                                marginRight: "10px",
-                                backgroundColor: "#2563eb",
-                                color: "white",
-                                border: "none",
-                                borderRadius: "6px",
-                                cursor: "pointer"
-                            }}
-                        >
-                            Update Employee
-                        </button>
+                        <div className="form-group">
+
+                            <label htmlFor="password">
+                                New Password
+                            </label>
+
+                            <input
+                                id="password"
+                                type="password"
+                                value={password}
+                                onChange={(e) =>
+                                    setPassword(e.target.value)
+                                }
+                                placeholder="Leave blank to keep current password"
+                                minLength="6"
+                            />
+
+                            <small>
+                                Only enter a password if you want to change it.
+                            </small>
+
+                        </div>
 
 
-                        <button
-                            type="button"
-                            onClick={() => navigate("/users")}
-                            style={{
-                                padding: "12px 25px",
-                                backgroundColor: "#e5e7eb",
-                                border: "none",
-                                borderRadius: "6px",
-                                cursor: "pointer"
-                            }}
-                        >
-                            Cancel
-                        </button>
+                        {/* Role */}
 
-                    </div>
+                        <div className="form-group">
 
-                </form>
+                            <label htmlFor="role">
+                                Role
+                            </label>
+
+                            <select
+                                id="role"
+                                value={role}
+                                onChange={(e) =>
+                                    setRole(e.target.value)
+                                }
+                            >
+
+                                <option value="EMPLOYEE">
+                                    Employee
+                                </option>
+
+                                <option value="ADMIN">
+                                    Administrator
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        {/* Buttons */}
+
+                        <div className="form-actions">
+
+                            <button
+                                type="button"
+                                className="cancel-button"
+                                onClick={() =>
+                                    navigate("/users")
+                                }
+                            >
+                                Cancel
+                            </button>
+
+
+                            <button
+                                type="submit"
+                                className="save-button"
+                                disabled={saving}
+                            >
+                                {saving
+                                    ? "Saving..."
+                                    : "Save Changes"
+                                }
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
 
             </div>
 

@@ -1,0 +1,15 @@
+#
+
+
+### MARK ATTENDANCE
+
+POST http://localhost:8080/api/attendance
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJQZXJlcmExMjNAZ21haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzg4ODM3OTM4LCJleHAiOjE3ODg5MjQzMzh9.T0MVZC-MA9Fm4Hc5NLUGpHqDNRkF5wQbLR5aVWITfUBS9-fOjlYW4HGHyspCZuKa
+Content-Type: application/json
+Accept: application/json
+
+{
+  "userId": 10,
+  "date": "2026-09-08",
+  "status": "PRESENT"
+}

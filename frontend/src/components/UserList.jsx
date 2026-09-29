@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
+import "./UserList.css";
 
 function UserList() {
 
@@ -10,6 +11,13 @@ function UserList() {
     const [loading, setLoading] = useState(true);
 
     const navigate = useNavigate();
+
+    const role = localStorage.getItem("role");
+    const isAdmin = role === "ADMIN";
+
+    // =========================
+    // FETCH USERS
+    // =========================
 
     const fetchUsers = async () => {
 
@@ -28,32 +36,37 @@ function UserList() {
 
             console.error("Error fetching users:", error);
 
-            console.log("Status:", error.response?.status);
-            console.log("Response:", error.response?.data);
-
-            if (error.response?.status === 401 ||
-                error.response?.status === 403) {
-
+            if (
+                error.response?.status === 401 ||
+                error.response?.status === 403
+            ) {
                 setMessage(
                     "Your login session is invalid or expired. Please login again."
                 );
-
             } else {
-
                 setMessage("Could not load employees.");
             }
 
         } finally {
 
             setLoading(false);
+
         }
     };
 
+
+    // =========================
+    // LOAD USERS
+    // =========================
+
     useEffect(() => {
-
         fetchUsers();
-
     }, []);
+
+
+    // =========================
+    // DELETE USER
+    // =========================
 
     const handleDelete = async (id) => {
 
@@ -78,8 +91,14 @@ function UserList() {
             console.error("Delete error:", error);
 
             setMessage("Could not delete employee.");
+
         }
     };
+
+
+    // =========================
+    // SEARCH
+    // =========================
 
     const filteredUsers = users.filter((user) => {
 
@@ -90,98 +109,133 @@ function UserList() {
             user.email?.toLowerCase().includes(searchText) ||
             user.role?.toLowerCase().includes(searchText)
         );
+
     });
+
 
     return (
 
-        <div style={styles.page}>
+        <div className="users-page">
 
-            <div style={styles.container}>
+            <div className="users-container">
 
-                {/* Header */}
+                {/* =========================
+                    HEADER
+                ========================= */}
 
-                <div style={styles.header}>
+                <header className="users-header">
 
                     <div>
 
-                        <h1 style={styles.title}>
+                        <h1>
                             Employee Management
                         </h1>
 
-                        <p style={styles.subtitle}>
+                        <p>
                             Manage employees and their account information
                         </p>
 
                     </div>
 
-                    <div style={styles.headerButtons}>
+
+                    <div className="users-header-actions">
 
                         <button
-                            style={styles.secondaryButton}
+                            className="secondary-button"
                             onClick={() => navigate("/dashboard")}
                         >
                             ← Dashboard
                         </button>
 
-                        <button
-                            style={styles.primaryButton}
-                            onClick={() => navigate("/users/add")}
-                        >
-                            + Add Employee
-                        </button>
+
+                        {isAdmin && (
+
+                            <button
+                                className="primary-button"
+                                onClick={() => navigate("/add-employee")}
+                            >
+                                + Add Employee
+                            </button>
+
+                        )}
 
                     </div>
 
-                </div>
+                </header>
 
 
-                {/* Message */}
+                {/* =========================
+                    MESSAGE
+                ========================= */}
 
                 {message && (
 
-                    <div style={styles.message}>
+                    <div className="users-message">
                         {message}
                     </div>
 
                 )}
 
 
-                {/* Search */}
+                {/* =========================
+                    TOOLBAR
+                ========================= */}
 
-                <div style={styles.toolbar}>
+                <div className="users-toolbar">
 
-                    <input
-                        type="text"
-                        placeholder="Search by name, email or role..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        style={styles.search}
-                    />
+                    <div className="search-wrapper">
 
-                    <span style={styles.count}>
+                        <span className="search-icon">
+                            ⌕
+                        </span>
+
+                        <input
+                            type="text"
+                            placeholder="Search by name, email or role..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+
+                    </div>
+
+
+                    <span className="employee-count">
+
                         {filteredUsers.length} employee
                         {filteredUsers.length !== 1 ? "s" : ""}
+
                     </span>
 
                 </div>
 
 
-                {/* Employee Table */}
+                {/* =========================
+                    TABLE CARD
+                ========================= */}
 
-                <div style={styles.card}>
+                <div className="users-card">
 
                     {loading ? (
 
-                        <div style={styles.empty}>
-                            <h2>Loading employees...</h2>
-                            <p>Please wait.</p>
+                        <div className="users-empty">
+
+                            <div className="loading-spinner"></div>
+
+                            <h2>
+                                Loading employees...
+                            </h2>
+
+                            <p>
+                                Please wait.
+                            </p>
+
                         </div>
 
                     ) : filteredUsers.length === 0 ? (
 
-                        <div style={styles.empty}>
+                        <div className="users-empty">
 
-                            <div style={styles.icon}>
+                            <div className="empty-icon">
                                 👥
                             </div>
 
@@ -190,18 +244,21 @@ function UserList() {
                             </h2>
 
                             <p>
+
                                 {search
                                     ? "Try a different search."
                                     : "There are currently no employees in the system."
                                 }
+
                             </p>
 
-                            {!search && (
+
+                            {!search && isAdmin && (
 
                                 <button
-                                    style={styles.primaryButton}
+                                    className="primary-button"
                                     onClick={() =>
-                                        navigate("/users/add")
+                                        navigate("/add-employee")
                                     }
                                 >
                                     + Add First Employee
@@ -213,107 +270,141 @@ function UserList() {
 
                     ) : (
 
-                        <table style={styles.table}>
+                        <div className="table-wrapper">
 
-                            <thead>
+                            <table className="users-table">
 
-                                <tr>
+                                <thead>
 
-                                    <th style={styles.th}>
-                                        ID
-                                    </th>
+                                    <tr>
 
-                                    <th style={styles.th}>
-                                        Employee
-                                    </th>
+                                        <th>ID</th>
 
-                                    <th style={styles.th}>
-                                        Email
-                                    </th>
+                                        <th>Employee</th>
 
-                                    <th style={styles.th}>
-                                        Role
-                                    </th>
+                                        <th>Email</th>
 
-                                    <th style={styles.th}>
-                                        Actions
-                                    </th>
+                                        <th>Role</th>
 
-                                </tr>
-
-                            </thead>
-
-                            <tbody>
-
-                                {filteredUsers.map((user) => (
-
-                                    <tr key={user.id}>
-
-                                        <td style={styles.td}>
-                                            #{user.id}
-                                        </td>
-
-                                        <td style={styles.td}>
-
-                                            <div style={styles.employee}>
-
-                                                <div style={styles.avatar}>
-                                                    {user.name
-                                                        ?.charAt(0)
-                                                        .toUpperCase()}
-                                                </div>
-
-                                                <strong>
-                                                    {user.name}
-                                                </strong>
-
-                                            </div>
-
-                                        </td>
-
-                                        <td style={styles.td}>
-                                            {user.email}
-                                        </td>
-
-                                        <td style={styles.td}>
-
-                                            <span style={styles.role}>
-                                                {user.role}
-                                            </span>
-
-                                        </td>
-
-                                        <td style={styles.td}>
-
-                                            <button
-                                                style={styles.editButton}
-                                                onClick={() =>
-                                                    navigate(
-                                                        `/users/edit/${user.id}`
-                                                    )
-                                                }
-                                            >
-                                                Edit
-                                            </button>
-
-                                            <button
-                                                style={styles.deleteButton}
-                                                onClick={() =>
-                                                    handleDelete(user.id)
-                                                }
-                                            >
-                                                Delete
-                                            </button>
-
-                                        </td>
+                                        {isAdmin && (
+                                            <th>Actions</th>
+                                        )}
 
                                     </tr>
 
-                                ))}
+                                </thead>
 
-                            </tbody>
 
-                        </table>
+                                <tbody>
+
+                                    {filteredUsers.map((user) => (
+
+                                        <tr key={user.id}>
+
+                                            <td>
+                                                <span className="user-id">
+                                                    #{user.id}
+                                                </span>
+                                            </td>
+
+
+                                            <td>
+
+                                                <div className="employee-cell">
+
+                                                    <div className="employee-avatar">
+
+                                                        {user.name
+                                                            ?.charAt(0)
+                                                            .toUpperCase()}
+
+                                                    </div>
+
+                                                    <div>
+
+                                                        <strong>
+                                                            {user.name}
+                                                        </strong>
+
+                                                        <span>
+                                                            Employee
+                                                        </span>
+
+                                                    </div>
+
+                                                </div>
+
+                                            </td>
+
+
+                                            <td>
+
+                                                <span className="email-text">
+                                                    {user.email}
+                                                </span>
+
+                                            </td>
+
+
+                                            <td>
+
+                                                <span
+                                                    className={
+                                                        user.role === "ADMIN"
+                                                            ? "role-badge admin"
+                                                            : "role-badge employee"
+                                                    }
+                                                >
+                                                    {user.role}
+                                                </span>
+
+                                            </td>
+
+
+                                            {isAdmin && (
+
+                                                <td>
+
+                                                    <div className="action-buttons">
+
+                                                        <button
+                                                            className="edit-button"
+                                                            onClick={() =>
+                                                                navigate(
+                                                                    `/users/edit/${user.id}`
+                                                                )
+                                                            }
+                                                        >
+                                                            Edit
+                                                        </button>
+
+
+                                                        <button
+                                                            className="delete-button"
+                                                            onClick={() =>
+                                                                handleDelete(
+                                                                    user.id
+                                                                )
+                                                            }
+                                                        >
+                                                            Delete
+                                                        </button>
+
+                                                    </div>
+
+                                                </td>
+
+                                            )}
+
+                                        </tr>
+
+                                    ))}
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
 
                     )}
 
@@ -324,181 +415,5 @@ function UserList() {
         </div>
     );
 }
-
-
-const styles = {
-
-    page: {
-        minHeight: "100vh",
-        background: "#f5f7fb",
-        padding: "40px 20px",
-        fontFamily: "Arial, sans-serif"
-    },
-
-    container: {
-        maxWidth: "1200px",
-        margin: "0 auto"
-    },
-
-    header: {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: "35px"
-    },
-
-    title: {
-        margin: 0,
-        fontSize: "36px",
-        color: "#1f2937"
-    },
-
-    subtitle: {
-        color: "#6b7280",
-        marginTop: "8px",
-        fontSize: "16px"
-    },
-
-    headerButtons: {
-        display: "flex",
-        gap: "12px"
-    },
-
-    primaryButton: {
-        background: "#2563eb",
-        color: "white",
-        border: "none",
-        padding: "12px 20px",
-        borderRadius: "8px",
-        cursor: "pointer",
-        fontSize: "15px",
-        fontWeight: "600"
-    },
-
-    secondaryButton: {
-        background: "white",
-        color: "#374151",
-        border: "1px solid #d1d5db",
-        padding: "12px 20px",
-        borderRadius: "8px",
-        cursor: "pointer",
-        fontSize: "15px"
-    },
-
-    message: {
-        background: "#ecfdf5",
-        border: "1px solid #a7f3d0",
-        color: "#047857",
-        padding: "15px 18px",
-        borderRadius: "8px",
-        marginBottom: "22px"
-    },
-
-    toolbar: {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: "20px"
-    },
-
-    search: {
-        width: "400px",
-        padding: "13px 16px",
-        border: "1px solid #d1d5db",
-        borderRadius: "8px",
-        fontSize: "15px",
-        outline: "none"
-    },
-
-    count: {
-        color: "#6b7280",
-        fontSize: "14px"
-    },
-
-    card: {
-        background: "white",
-        borderRadius: "12px",
-        border: "1px solid #e5e7eb",
-        overflow: "hidden",
-        boxShadow: "0 4px 15px rgba(0,0,0,0.05)"
-    },
-
-    table: {
-        width: "100%",
-        borderCollapse: "collapse"
-    },
-
-    th: {
-        textAlign: "left",
-        padding: "18px",
-        background: "#f9fafb",
-        color: "#374151",
-        borderBottom: "1px solid #e5e7eb",
-        fontSize: "14px"
-    },
-
-    td: {
-        padding: "18px",
-        borderBottom: "1px solid #f1f5f9",
-        color: "#4b5563"
-    },
-
-    employee: {
-        display: "flex",
-        alignItems: "center",
-        gap: "12px",
-        color: "#111827"
-    },
-
-    avatar: {
-        width: "38px",
-        height: "38px",
-        borderRadius: "50%",
-        background: "#dbeafe",
-        color: "#2563eb",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontWeight: "bold"
-    },
-
-    role: {
-        background: "#eff6ff",
-        color: "#2563eb",
-        padding: "6px 10px",
-        borderRadius: "20px",
-        fontSize: "13px",
-        fontWeight: "600"
-    },
-
-    editButton: {
-        background: "#f3f4f6",
-        color: "#374151",
-        border: "none",
-        padding: "8px 14px",
-        borderRadius: "6px",
-        cursor: "pointer",
-        marginRight: "8px"
-    },
-
-    deleteButton: {
-        background: "#fee2e2",
-        color: "#dc2626",
-        border: "none",
-        padding: "8px 14px",
-        borderRadius: "6px",
-        cursor: "pointer"
-    },
-
-    empty: {
-        textAlign: "center",
-        padding: "80px 20px"
-    },
-
-    icon: {
-        fontSize: "45px",
-        marginBottom: "10px"
-    }
-};
 
 export default UserList;
