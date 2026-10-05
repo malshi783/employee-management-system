@@ -8,6 +8,10 @@ import EditEmployee from "./components/EditEmployee";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MyProfile from "./components/MyProfile";
 import MyAttendance from "./components/MyAttendance";
+import LeaveRequest from "./components/LeaveRequest";
+import LeaveManagement from "./components/LeaveManagement";
+import Support from "./components/Support";
+import SupportManagement from "./components/SupportManagement";
 
 function App() {
     return (
@@ -70,6 +74,35 @@ function App() {
                     }
                 />
 
+                <Route
+                    path="/leave"
+                    element={
+                        <ProtectedRoute>
+                            <LeaveRequest />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/leave-management"
+                    element={
+                        <ProtectedRoute>
+                            <LeaveManagement />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route path="/support"
+                       element={<ProtectedRoute>
+                           <Support />
+                </ProtectedRoute>} />
+                <Route
+                    path="/support-management"
+                    element={
+                        <ProtectedRoute>
+                            <SupportManagement />
+                        </ProtectedRoute>
+                    }
+                />
             </Routes>
         </BrowserRouter>
     );

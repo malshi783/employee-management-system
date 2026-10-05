@@ -1,0 +1,79 @@
+.support-management-container {
+    padding: 30px;
+    max-width: 1400px;
+    margin: auto;
+}
+
+.support-management-container h2 {
+    margin-bottom: 25px;
+}
+
+.support-management-card {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.support-management-message {
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.support-management-table-wrapper {
+    overflow-x: auto;
+}
+
+.support-management-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.support-management-table th,
+.support-management-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+    vertical-align: top;
+}
+
+.support-management-table th {
+    background: #f5f5f5;
+    font-weight: 600;
+}
+
+.support-status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.support-status.pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.support-status.resolved {
+    background: #d4edda;
+    color: #155724;
+}
+
+.resolve-button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    background: #2563eb;
+    color: white;
+    cursor: pointer;
+}
+
+.resolve-button:hover {
+    background: #1d4ed8;
+}
+
+.resolved-text {
+    color: #155724;
+    font-weight: 600;
+}
