@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import api from "../api/api";
+import Sidebar from "./Sidebar";
 import "./MyAttendance.css";
 
 function MyAttendance() {
-    const navigate = useNavigate();
-
     const [attendance, setAttendance] = useState([]);
+
     const [stats, setStats] = useState({
         present: 0,
         absent: 0,
@@ -26,17 +25,22 @@ function MyAttendance() {
             setLoading(true);
             setError("");
 
-            const [attendanceResponse, statsResponse] =
-                await Promise.all([
-                    api.get("/attendance/me"),
-                    api.get("/attendance/me/stats")
-                ]);
+            const [
+                attendanceResponse,
+                statsResponse
+            ] = await Promise.all([
+                api.get("/attendance/me"),
+                api.get("/attendance/me/stats")
+            ]);
 
             setAttendance(attendanceResponse.data);
             setStats(statsResponse.data);
 
         } catch (error) {
-            console.error("Could not load attendance:", error);
+            console.error(
+                "Could not load attendance:",
+                error
+            );
 
             if (error.response) {
                 setError(
@@ -44,13 +48,15 @@ function MyAttendance() {
                     "Could not load your attendance."
                 );
             } else {
-                setError("Could not connect to the backend.");
+                setError(
+                    "Could not connect to the backend."
+                );
             }
+
         } finally {
             setLoading(false);
         }
     };
-
 
     const getStatusClass = (status) => {
         switch (status) {
@@ -68,54 +74,76 @@ function MyAttendance() {
         }
     };
 
-
     const formatStatus = (status) => {
-        if (!status) return "-";
+        if (!status) {
+            return "-";
+        }
 
-        return status.charAt(0) +
-            status.slice(1).toLowerCase();
+        return (
+            status.charAt(0) +
+            status.slice(1).toLowerCase()
+        );
     };
 
+    const percentage = Math.min(
+        Number(stats.percentage || 0),
+        100
+    );
 
     if (loading) {
         return (
-            <div className="attendance-page">
-                <div className="attendance-loading">
-                    <div className="loading-spinner"></div>
-                    <h2>Loading attendance...</h2>
-                    <p>Please wait.</p>
-                </div>
+            <div className="attendance-layout">
+
+                <Sidebar />
+
+                <main className="attendance-main">
+
+                    <div className="attendance-loading">
+
+                        <div className="loading-spinner"></div>
+
+                        <h2>
+                            Loading attendance
+                        </h2>
+
+                        <p>
+                            Please wait while we retrieve
+                            your attendance records.
+                        </p>
+
+                    </div>
+
+                </main>
+
             </div>
         );
     }
 
-
     return (
-        <div className="attendance-page">
+        <div className="attendance-layout">
 
-            <div className="attendance-container">
+            <Sidebar />
 
-                {/* =========================
+            <main className="attendance-main">
+
+                {/* =================================
                     HEADER
-                ========================= */}
+                ================================= */}
 
                 <header className="attendance-header">
 
                     <div>
 
-                        <button
-                            className="attendance-back-button"
-                            onClick={() =>
-                                navigate("/dashboard")
-                            }
-                        >
-                            ← Dashboard
-                        </button>
+                        <span className="page-label">
+                            EMPLOYEE SELF SERVICE
+                        </span>
 
-                        <h1>My Attendance</h1>
+                        <h1>
+                            My Attendance
+                        </h1>
 
                         <p>
-                            View your attendance summary and history
+                            View your attendance summary and history.
                         </p>
 
                     </div>
@@ -130,22 +158,32 @@ function MyAttendance() {
                 </header>
 
 
-                {/* =========================
+                {/* =================================
                     ERROR
-                ========================= */}
+                ================================= */}
 
                 {error && (
                     <div className="attendance-error">
-                        {error}
+
+                        <span className="error-icon">
+                            !
+                        </span>
+
+                        <p>
+                            {error}
+                        </p>
+
                     </div>
                 )}
 
 
-                {/* =========================
+                {/* =================================
                     STATISTICS
-                ========================= */}
+                ================================= */}
 
                 <section className="attendance-stats">
+
+                    {/* Attendance Rate */}
 
                     <div className="attendance-stat-card">
 
@@ -154,15 +192,23 @@ function MyAttendance() {
                         </div>
 
                         <div>
-                            <span>Attendance Rate</span>
+
+                            <span>
+                                Attendance Rate
+                            </span>
 
                             <strong>
-                                {Number(stats.percentage || 0).toFixed(1)}%
+                                {Number(
+                                    stats.percentage || 0
+                                ).toFixed(1)}%
                             </strong>
+
                         </div>
 
                     </div>
 
+
+                    {/* Present */}
 
                     <div className="attendance-stat-card">
 
@@ -171,15 +217,21 @@ function MyAttendance() {
                         </div>
 
                         <div>
-                            <span>Present</span>
+
+                            <span>
+                                Present
+                            </span>
 
                             <strong>
                                 {stats.present}
                             </strong>
+
                         </div>
 
                     </div>
 
+
+                    {/* Late */}
 
                     <div className="attendance-stat-card">
 
@@ -188,15 +240,21 @@ function MyAttendance() {
                         </div>
 
                         <div>
-                            <span>Late</span>
+
+                            <span>
+                                Late
+                            </span>
 
                             <strong>
                                 {stats.late}
                             </strong>
+
                         </div>
 
                     </div>
 
+
+                    {/* Absent */}
 
                     <div className="attendance-stat-card">
 
@@ -205,11 +263,15 @@ function MyAttendance() {
                         </div>
 
                         <div>
-                            <span>Absent</span>
+
+                            <span>
+                                Absent
+                            </span>
 
                             <strong>
                                 {stats.absent}
                             </strong>
+
                         </div>
 
                     </div>
@@ -217,24 +279,34 @@ function MyAttendance() {
                 </section>
 
 
-                {/* =========================
-                    ATTENDANCE PROGRESS
-                ========================= */}
+                {/* =================================
+                    ATTENDANCE OVERVIEW
+                ================================= */}
 
                 <section className="attendance-summary-card">
 
                     <div className="summary-header">
 
                         <div>
-                            <h2>Attendance Overview</h2>
+
+                            <span className="section-label">
+                                PERFORMANCE
+                            </span>
+
+                            <h2>
+                                Attendance Overview
+                            </h2>
 
                             <p>
-                                Your current attendance performance
+                                Your current attendance performance.
                             </p>
+
                         </div>
 
                         <strong className="summary-percentage">
-                            {Number(stats.percentage || 0).toFixed(1)}%
+                            {Number(
+                                stats.percentage || 0
+                            ).toFixed(1)}%
                         </strong>
 
                     </div>
@@ -245,10 +317,7 @@ function MyAttendance() {
                         <div
                             className="progress-fill"
                             style={{
-                                width: `${Math.min(
-                                    Number(stats.percentage || 0),
-                                    100
-                                )}%`
+                                width: `${percentage}%`
                             }}
                         ></div>
 
@@ -257,24 +326,35 @@ function MyAttendance() {
                 </section>
 
 
-                {/* =========================
+                {/* =================================
                     ATTENDANCE HISTORY
-                ========================= */}
+                ================================= */}
 
                 <section className="attendance-history-card">
 
                     <div className="history-header">
 
                         <div>
-                            <h2>Attendance History</h2>
+
+                            <span className="section-label">
+                                RECORDS
+                            </span>
+
+                            <h2>
+                                Attendance History
+                            </h2>
 
                             <p>
-                                Your recent attendance records
+                                Your recent attendance records.
                             </p>
+
                         </div>
 
                         <span className="record-count">
-                            {attendance.length} records
+                            {attendance.length}{" "}
+                            {attendance.length === 1
+                                ? "record"
+                                : "records"}
                         </span>
 
                     </div>
@@ -285,14 +365,16 @@ function MyAttendance() {
                         <div className="empty-attendance">
 
                             <div className="empty-icon">
-                                📅
+                                ▣
                             </div>
 
-                            <h3>No attendance records</h3>
+                            <h3>
+                                No attendance records
+                            </h3>
 
                             <p>
-                                Your attendance records will appear here
-                                once they are added.
+                                Your attendance records will
+                                appear here once they are added.
                             </p>
 
                         </div>
@@ -306,8 +388,15 @@ function MyAttendance() {
                                 <thead>
 
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Status</th>
+
+                                    <th>
+                                        DATE
+                                    </th>
+
+                                    <th>
+                                        STATUS
+                                    </th>
+
                                 </tr>
 
                                 </thead>
@@ -319,13 +408,17 @@ function MyAttendance() {
                                     <tr key={record.id}>
 
                                         <td>
+
                                             <div className="attendance-date">
+
                                                     <span className="calendar-icon">
-                                                        📅
+                                                        ▣
                                                     </span>
 
                                                 {record.date}
+
                                             </div>
+
                                         </td>
 
                                         <td>
@@ -335,6 +428,7 @@ function MyAttendance() {
                                                         record.status
                                                     )}
                                                 >
+
                                                     <span className="status-dot">
                                                         ●
                                                     </span>
@@ -342,6 +436,7 @@ function MyAttendance() {
                                                     {formatStatus(
                                                         record.status
                                                     )}
+
                                                 </span>
 
                                         </td>
@@ -360,7 +455,7 @@ function MyAttendance() {
 
                 </section>
 
-            </div>
+            </main>
 
         </div>
     );

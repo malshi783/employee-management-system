@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
+import Sidebar from "./Sidebar";
 import "./MyProfile.css";
 
 function MyProfile() {
@@ -18,9 +19,10 @@ function MyProfile() {
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
 
-    // ==============================
+    // =================================
     // LOAD PROFILE
-    // ==============================
+    // =================================
+
     useEffect(() => {
         fetchProfile();
     }, []);
@@ -35,16 +37,20 @@ function MyProfile() {
 
         } catch (error) {
             console.error("Could not load profile:", error);
-            setError("Could not load your profile. Please try again.");
+            setError(
+                "Could not load your profile. Please try again."
+            );
 
         } finally {
             setLoading(false);
         }
     };
 
-    // ==============================
+
+    // =================================
     // SAVE PROFILE CHANGES
-    // ==============================
+    // =================================
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -67,17 +73,25 @@ function MyProfile() {
             setEmail(response.data.email);
 
             // Update stored email
-            localStorage.setItem("email", response.data.email);
+            localStorage.setItem(
+                "email",
+                response.data.email
+            );
 
-            setMessage("Profile updated successfully.");
+            setMessage(
+                "Profile updated successfully."
+            );
 
-            // Go to dashboard after successful save
+            // Return to dashboard after successful save
             setTimeout(() => {
                 navigate("/dashboard");
             }, 800);
 
         } catch (error) {
-            console.error("Could not update profile:", error);
+            console.error(
+                "Could not update profile:",
+                error
+            );
 
             if (error.response) {
                 setError(
@@ -86,7 +100,9 @@ function MyProfile() {
                     "Could not update your profile."
                 );
             } else {
-                setError("Could not connect to the backend.");
+                setError(
+                    "Could not connect to the backend."
+                );
             }
 
         } finally {
@@ -94,16 +110,20 @@ function MyProfile() {
         }
     };
 
-    // ==============================
+
+    // =================================
     // OPEN PHOTO SELECTOR
-    // ==============================
+    // =================================
+
     const handlePhotoClick = () => {
         fileInputRef.current?.click();
     };
 
-    // ==============================
+
+    // =================================
     // UPLOAD PROFILE PHOTO
-    // ==============================
+    // =================================
+
     const handlePhotoChange = async (e) => {
         const file = e.target.files?.[0];
 
@@ -122,14 +142,20 @@ function MyProfile() {
                 "image/webp"
             ].includes(file.type)
         ) {
-            setError("Only JPG, PNG and WEBP images are allowed.");
+            setError(
+                "Only JPG, PNG and WEBP images are allowed."
+            );
+
             e.target.value = "";
             return;
         }
 
         // Check image size
         if (file.size > 5 * 1024 * 1024) {
-            setError("Image size must be less than 5 MB.");
+            setError(
+                "Image size must be less than 5 MB."
+            );
+
             e.target.value = "";
             return;
         }
@@ -164,19 +190,14 @@ function MyProfile() {
                 );
             }
 
-            const updatedProfile = await response.json();
+            const updatedProfile =
+                await response.json();
 
-            // Update profile with new photo
             setProfile(updatedProfile);
 
             setMessage(
                 "Profile photo updated successfully."
             );
-
-            // IMPORTANT:
-            // Do NOT navigate to dashboard here.
-            // Employee should remain on My Profile after
-            // changing the photo.
 
         } catch (error) {
             console.error(
@@ -197,9 +218,11 @@ function MyProfile() {
         }
     };
 
-    // ==============================
+
+    // =================================
     // PROFILE PHOTO URL
-    // ==============================
+    // =================================
+
     const getProfilePhotoUrl = () => {
         if (!profile?.profilePhotoUrl) {
             return null;
@@ -208,50 +231,75 @@ function MyProfile() {
         return `http://localhost:8080${profile.profilePhotoUrl}`;
     };
 
-    // ==============================
-    // LOADING SCREEN
-    // ==============================
+
+    // =================================
+    // LOADING
+    // =================================
+
     if (loading) {
         return (
-            <div className="profile-page">
+            <div className="profile-layout">
 
-                <div className="profile-loading">
+                <Sidebar />
 
-                    <div className="loading-spinner"></div>
+                <main className="profile-main">
 
-                    <h2>Loading profile...</h2>
+                    <div className="profile-loading">
 
-                    <p>Please wait.</p>
+                        <div className="loading-spinner"></div>
 
-                </div>
+                        <h2>
+                            Loading profile...
+                        </h2>
+
+                        <p>
+                            Please wait.
+                        </p>
+
+                    </div>
+
+                </main>
 
             </div>
         );
     }
 
-    // ==============================
+
+    // =================================
     // PROFILE PAGE
-    // ==============================
+    // =================================
+
     return (
-        <div className="profile-page">
+        <div className="profile-layout">
 
-            <div className="profile-container">
+            {/* =================================
+                SIDEBAR
+            ================================= */}
 
-                {/* HEADER */}
+            <Sidebar />
+
+
+            {/* =================================
+                MAIN CONTENT
+            ================================= */}
+
+            <main className="profile-main">
+
+                {/* =================================
+                    PAGE HEADER
+                ================================= */}
+
                 <header className="profile-header">
 
                     <div>
 
-                        <button
-                            className="profile-back-button"
-                            onClick={() =>
-                                navigate("/dashboard")
-                            }
-                        >
-                            ← Dashboard
-                        </button>
+                        <span className="profile-page-label">
+                            PERSONAL
+                        </span>
 
-                        <h1>My Profile</h1>
+                        <h1>
+                            My Profile
+                        </h1>
 
                         <p>
                             Manage your personal information
@@ -262,13 +310,20 @@ function MyProfile() {
                 </header>
 
 
-                {/* PROFILE CARD */}
+                {/* =================================
+                    PROFILE CARD
+                ================================= */}
+
                 <div className="profile-card">
 
-                    {/* PROFILE SUMMARY */}
+                    {/* =================================
+                        PROFILE SUMMARY
+                    ================================= */}
+
                     <div className="profile-summary">
 
                         {/* PHOTO */}
+
                         <div className="profile-photo-section">
 
                             {getProfilePhotoUrl() ? (
@@ -292,7 +347,8 @@ function MyProfile() {
                             )}
 
 
-                            {/* CHANGE PHOTO BUTTON */}
+                            {/* CHANGE PHOTO */}
+
                             <button
                                 type="button"
                                 className="change-photo-button"
@@ -308,6 +364,7 @@ function MyProfile() {
 
 
                             {/* HIDDEN FILE INPUT */}
+
                             <input
                                 ref={fileInputRef}
                                 type="file"
@@ -322,6 +379,7 @@ function MyProfile() {
 
 
                         {/* USER INFORMATION */}
+
                         <div className="profile-summary-info">
 
                             <h2>
@@ -341,33 +399,39 @@ function MyProfile() {
                     </div>
 
 
-                    {/* SUCCESS MESSAGE */}
+                    {/* =================================
+                        SUCCESS MESSAGE
+                    ================================= */}
+
                     {message && (
                         <div className="profile-success">
-
-                            {message}
-
+                            ✓ {message}
                         </div>
                     )}
 
 
-                    {/* ERROR MESSAGE */}
+                    {/* =================================
+                        ERROR MESSAGE
+                    ================================= */}
+
                     {error && (
                         <div className="profile-error">
-
-                            {error}
-
+                            ! {error}
                         </div>
                     )}
 
 
-                    {/* PROFILE FORM */}
+                    {/* =================================
+                        PROFILE FORM
+                    ================================= */}
+
                     <form
                         className="profile-form"
                         onSubmit={handleSubmit}
                     >
 
                         {/* NAME */}
+
                         <div className="profile-form-group">
 
                             <label htmlFor="name">
@@ -389,6 +453,7 @@ function MyProfile() {
 
 
                         {/* EMAIL */}
+
                         <div className="profile-form-group">
 
                             <label htmlFor="email">
@@ -410,6 +475,7 @@ function MyProfile() {
 
 
                         {/* ROLE */}
+
                         <div className="profile-form-group">
 
                             <label>
@@ -433,7 +499,10 @@ function MyProfile() {
                         </div>
 
 
-                        {/* BUTTONS */}
+                        {/* =================================
+                            BUTTONS
+                        ================================= */}
+
                         <div className="profile-form-actions">
 
                             <button
@@ -452,11 +521,9 @@ function MyProfile() {
                                 className="profile-save-button"
                                 disabled={saving}
                             >
-
                                 {saving
                                     ? "Saving..."
                                     : "Save Changes"}
-
                             </button>
 
                         </div>
@@ -465,7 +532,7 @@ function MyProfile() {
 
                 </div>
 
-            </div>
+            </main>
 
         </div>
     );

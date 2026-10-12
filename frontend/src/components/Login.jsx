@@ -5,25 +5,22 @@ import "./Login.css";
 
 function Login() {
 
-    // Store the values entered by the user
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    // Control password visibility
     const [showPassword, setShowPassword] = useState(false);
-
-    // Display login errors
     const [message, setMessage] = useState("");
-
-    // Control the loading state of the login button
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
 
 
+    // =========================================
+    // LOGIN
+    // =========================================
+
     const handleLogin = async (e) => {
 
-        // Stop the browser from refreshing the page
         e.preventDefault();
 
         setMessage("");
@@ -31,16 +28,18 @@ function Login() {
 
         try {
 
-            // Send login details to Spring Boot
             const response = await api.post("/auth/login", {
                 email: email,
                 password: password
             });
 
-            console.log("Login successful:", response.data);
+            console.log(
+                "Login successful:",
+                response.data
+            );
 
 
-            // Store authentication information
+            // Store JWT
             localStorage.setItem(
                 "token",
                 response.data.token
@@ -57,12 +56,15 @@ function Login() {
             );
 
 
-            // Go to Dashboard
+            // Go to dashboard
             navigate("/dashboard");
 
         } catch (error) {
 
-            console.error("Login error:", error);
+            console.error(
+                "Login error:",
+                error
+            );
 
             if (error.response) {
 
@@ -89,128 +91,247 @@ function Login() {
 
         <div className="login-page">
 
-            <div className="login-card">
+            <div className="login-container">
 
-                {/* Logo and heading */}
 
-                <div className="login-header">
+                {/* =================================
+                    LEFT BRAND PANEL
+                ================================= */}
 
-                    <div className="logo">
-                        EMS
+                <div className="login-brand-panel">
+
+                    <div className="brand-content">
+
+                        <div className="brand-logo">
+                            EMS
+                        </div>
+
+
+                        <span className="brand-label">
+                            EMPLOYEE MANAGEMENT SYSTEM
+                        </span>
+
+
+                        <h1>
+                            Manage your
+                            <br />
+                            workforce
+                            <br />
+                            <span>smarter.</span>
+                        </h1>
+
+
+                        <p>
+                            A centralized platform for managing
+                            employees, attendance, leave and
+                            support requests.
+                        </p>
+
+
+                        {/* FEATURES */}
+
+                        <div className="brand-features">
+
+                            <div>
+                                <span>✓</span>
+                                Employee management
+                            </div>
+
+                            <div>
+                                <span>✓</span>
+                                Attendance tracking
+                            </div>
+
+                            <div>
+                                <span>✓</span>
+                                Leave & support management
+                            </div>
+
+                        </div>
+
                     </div>
 
-                    <h1>
-                        Welcome back
-                    </h1>
 
-                    <p>
-                        Sign in to your Employee Management System
-                    </p>
+                    {/* BRAND FOOTER */}
+
+                    <div className="brand-footer">
+                        Employee Management System
+                    </div>
 
                 </div>
 
 
-                {/* Login form */}
 
-                <form onSubmit={handleLogin}>
+                {/* =================================
+                    LOGIN AREA
+                ================================= */}
 
-                    {/* Email */}
+                <div className="login-area">
 
-                    <div className="form-group">
-
-                        <label htmlFor="email">
-                            Email Address
-                        </label>
-
-                        <input
-                            id="email"
-                            type="email"
-                            placeholder="Enter your email"
-                            value={email}
-                            onChange={(e) =>
-                                setEmail(e.target.value)
-                            }
-                            required
-                        />
-
-                    </div>
+                    <div className="login-card">
 
 
-                    {/* Password */}
+                        {/* MOBILE LOGO */}
 
-                    <div className="form-group">
+                        <div className="mobile-logo">
+                            EMS
+                        </div>
 
-                        <label htmlFor="password">
-                            Password
-                        </label>
 
-                        <div className="password-wrapper">
+                        {/* =================================
+                            LOGIN HEADER
+                        ================================= */}
 
-                            <input
-                                id="password"
-                                type={
-                                    showPassword
-                                        ? "text"
-                                        : "password"
-                                }
-                                placeholder="Enter your password"
-                                value={password}
-                                onChange={(e) =>
-                                    setPassword(e.target.value)
-                                }
-                                required
-                            />
+                        <div className="login-header">
+
+                            <span className="login-label">
+                                ACCOUNT LOGIN
+                            </span>
+
+                            <h2>
+                                Welcome back
+                            </h2>
+
+                            <p>
+                                Sign in to your Employee
+                                Management System
+                            </p>
+
+                        </div>
+
+
+
+                        {/* =================================
+                            LOGIN FORM
+                        ================================= */}
+
+                        <form onSubmit={handleLogin}>
+
+
+                            {/* EMAIL */}
+
+                            <div className="form-group">
+
+                                <label htmlFor="email">
+                                    Email Address
+                                </label>
+
+                                <input
+                                    id="email"
+                                    type="email"
+                                    placeholder="Enter your email"
+                                    value={email}
+                                    onChange={(e) =>
+                                        setEmail(e.target.value)
+                                    }
+                                    required
+                                />
+
+                            </div>
+
+
+
+                            {/* PASSWORD */}
+
+                            <div className="form-group">
+
+                                <label htmlFor="password">
+                                    Password
+                                </label>
+
+                                <div className="password-wrapper">
+
+                                    <input
+                                        id="password"
+                                        type={
+                                            showPassword
+                                                ? "text"
+                                                : "password"
+                                        }
+                                        placeholder="Enter your password"
+                                        value={password}
+                                        onChange={(e) =>
+                                            setPassword(e.target.value)
+                                        }
+                                        required
+                                    />
+
+
+                                    <button
+                                        type="button"
+                                        className="password-toggle"
+                                        onClick={() =>
+                                            setShowPassword(
+                                                !showPassword
+                                            )
+                                        }
+                                    >
+                                        {showPassword
+                                            ? "Hide"
+                                            : "Show"}
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+
+
+                            {/* =================================
+                                ERROR MESSAGE
+                            ================================= */}
+
+                            {message && (
+
+                                <div className="login-error">
+
+                                    <span>!</span>
+
+                                    <p>
+                                        {message}
+                                    </p>
+
+                                </div>
+
+                            )}
+
+
+
+                            {/* =================================
+                                LOGIN BUTTON
+                            ================================= */}
 
                             <button
-                                type="button"
-                                className="password-toggle"
-                                onClick={() =>
-                                    setShowPassword(!showPassword)
-                                }
+                                type="submit"
+                                className="login-button"
+                                disabled={loading}
                             >
-                                {showPassword
-                                    ? "Hide"
-                                    : "Show"}
+
+                                {loading && (
+                                    <span className="login-spinner"></span>
+                                )}
+
+                                {loading
+                                    ? "Signing in..."
+                                    : "Sign In"}
+
                             </button>
+
+                        </form>
+
+
+
+                        {/* =================================
+                            FOOTER
+                        ================================= */}
+
+                        <div className="login-footer">
+
+                            Employee Management System
 
                         </div>
 
                     </div>
-
-
-                    {/* Error message */}
-
-                    {message && (
-
-                        <div className="login-error">
-                            {message}
-                        </div>
-
-                    )}
-
-
-                    {/* Login button */}
-
-                    <button
-                        type="submit"
-                        className="login-button"
-                        disabled={loading}
-                    >
-
-                        {loading
-                            ? "Signing in..."
-                            : "Sign In"}
-
-                    </button>
-
-                </form>
-
-
-                {/* Footer */}
-
-                <div className="login-footer">
-
-                    Employee Management System
 
                 </div>
 

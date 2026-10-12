@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
+import Sidebar from "./Sidebar";
 import "./AddEmployee.css";
 
 function AddEmployee() {
@@ -36,7 +37,7 @@ function AddEmployee() {
 
             console.log("Employee created:", response.data);
 
-            setMessage("Employee created successfully!");
+            setMessage("Employee account created successfully.");
 
             setName("");
             setEmail("");
@@ -77,186 +78,346 @@ function AddEmployee() {
 
     return (
 
-        <div className="add-employee-page">
+        <div className="add-employee-layout">
 
-            <div className="add-employee-container">
+            {/* =========================
+                SIDEBAR
+            ========================= */}
+
+            <Sidebar />
+
+
+            {/* =========================
+                MAIN CONTENT
+            ========================= */}
+
+            <main className="add-employee-main">
 
                 {/* Header */}
 
-                <div className="form-header">
+                <div className="add-employee-header">
+
+                    <div>
+
+                        <span className="page-label">
+                            EMPLOYEE MANAGEMENT
+                        </span>
+
+                        <h1>
+                            Add Employee
+                        </h1>
+
+                        <p>
+                            Create a new employee account and
+                            assign their system role.
+                        </p>
+
+                    </div>
+
 
                     <button
                         className="back-button"
                         onClick={() => navigate("/users")}
                     >
-                        ← Employees
+                        ← Back to Employees
                     </button>
 
-                    <h1>
-                        Add Employee
-                    </h1>
-
-                    <p>
-                        Create a new employee account
-                    </p>
-
                 </div>
 
 
-                {/* Form Card */}
+                {/* =========================
+                    FORM
+                ========================= */}
 
-                <div className="form-card">
+                <div className="add-employee-content">
 
-                    {message && (
+                    <div className="form-card">
 
-                        <div className="success-message">
-                            {message}
-                        </div>
+                        {/* Card Header */}
 
-                    )}
+                        <div className="form-card-header">
 
+                            <div className="form-card-icon">
+                                +
+                            </div>
 
-                    {error && (
+                            <div>
 
-                        <div className="error-message">
-                            {error}
-                        </div>
+                                <h2>
+                                    Employee Information
+                                </h2>
 
-                    )}
+                                <p>
+                                    Enter the employee's account
+                                    details below.
+                                </p>
 
-
-                    <form onSubmit={handleSubmit}>
-
-                        {/* Name */}
-
-                        <div className="form-group">
-
-                            <label htmlFor="name">
-                                Full Name
-                            </label>
-
-                            <input
-                                id="name"
-                                type="text"
-                                placeholder="Enter employee name"
-                                value={name}
-                                onChange={(e) =>
-                                    setName(e.target.value)
-                                }
-                                required
-                            />
+                            </div>
 
                         </div>
 
 
-                        {/* Email */}
+                        {/* Messages */}
 
-                        <div className="form-group">
+                        {message && (
 
-                            <label htmlFor="email">
-                                Email Address
-                            </label>
+                            <div className="success-message">
 
-                            <input
-                                id="email"
-                                type="email"
-                                placeholder="Enter employee email"
-                                value={email}
-                                onChange={(e) =>
-                                    setEmail(e.target.value)
-                                }
-                                required
-                            />
+                                <span className="message-icon">
+                                    ✓
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        Success
+                                    </strong>
+
+                                    <p>
+                                        {message}
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        )}
+
+
+                        {error && (
+
+                            <div className="error-message">
+
+                                <span className="message-icon">
+                                    !
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        Unable to create account
+                                    </strong>
+
+                                    <p>
+                                        {error}
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        )}
+
+
+                        <form onSubmit={handleSubmit}>
+
+                            {/* =========================
+                                NAME
+                            ========================= */}
+
+                            <div className="form-group">
+
+                                <label htmlFor="name">
+                                    Full Name
+                                </label>
+
+                                <input
+                                    id="name"
+                                    type="text"
+                                    placeholder="e.g. Kasun Perera"
+                                    value={name}
+                                    onChange={(e) =>
+                                        setName(e.target.value)
+                                    }
+                                    required
+                                />
+
+                            </div>
+
+
+                            {/* =========================
+                                EMAIL
+                            ========================= */}
+
+                            <div className="form-group">
+
+                                <label htmlFor="email">
+                                    Email Address
+                                </label>
+
+                                <input
+                                    id="email"
+                                    type="email"
+                                    placeholder="employee@example.com"
+                                    value={email}
+                                    onChange={(e) =>
+                                        setEmail(e.target.value)
+                                    }
+                                    required
+                                />
+
+                            </div>
+
+
+                            {/* =========================
+                                PASSWORD
+                            ========================= */}
+
+                            <div className="form-group">
+
+                                <label htmlFor="password">
+                                    Password
+                                </label>
+
+                                <input
+                                    id="password"
+                                    type="password"
+                                    placeholder="Create a secure password"
+                                    value={password}
+                                    onChange={(e) =>
+                                        setPassword(e.target.value)
+                                    }
+                                    minLength="6"
+                                    required
+                                />
+
+                                <small>
+                                    Use at least 6 characters.
+                                </small>
+
+                            </div>
+
+
+                            {/* =========================
+                                ROLE
+                            ========================= */}
+
+                            <div className="form-group">
+
+                                <label htmlFor="role">
+                                    System Role
+                                </label>
+
+                                <select
+                                    id="role"
+                                    value={role}
+                                    onChange={(e) =>
+                                        setRole(e.target.value)
+                                    }
+                                >
+
+                                    <option value="EMPLOYEE">
+                                        Employee
+                                    </option>
+
+                                    <option value="ADMIN">
+                                        Administrator
+                                    </option>
+
+                                </select>
+
+                                <small>
+                                    The role determines which
+                                    areas of the system this
+                                    user can access.
+                                </small>
+
+                            </div>
+
+
+                            {/* =========================
+                                ACTIONS
+                            ========================= */}
+
+                            <div className="form-actions">
+
+                                <button
+                                    type="button"
+                                    className="cancel-button"
+                                    onClick={() =>
+                                        navigate("/users")
+                                    }
+                                >
+                                    Cancel
+                                </button>
+
+
+                                <button
+                                    type="submit"
+                                    className="create-button"
+                                    disabled={loading}
+                                >
+
+                                    {loading ? (
+                                        <>
+                                            <span className="button-spinner"></span>
+                                            Creating...
+                                        </>
+                                    ) : (
+                                        <>
+                                            Create Employee
+                                            <span>→</span>
+                                        </>
+                                    )}
+
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+
+
+                    {/* =========================
+                        SIDE INFORMATION
+                    ========================= */}
+
+                    <div className="employee-info-panel">
+
+                        <div className="info-panel-icon">
+                            EMS
+                        </div>
+
+                        <span>
+                            ACCOUNT SETUP
+                        </span>
+
+                        <h2>
+                            Create a new team member
+                        </h2>
+
+                        <p>
+                            Add an employee to the system
+                            and give them the appropriate
+                            access level.
+                        </p>
+
+
+                        <div className="info-points">
+
+                            <div>
+                                <span>✓</span>
+                                Secure account creation
+                            </div>
+
+                            <div>
+                                <span>✓</span>
+                                Role-based access
+                            </div>
+
+                            <div>
+                                <span>✓</span>
+                                Centralized employee management
+                            </div>
 
                         </div>
 
-
-                        {/* Password */}
-
-                        <div className="form-group">
-
-                            <label htmlFor="password">
-                                Password
-                            </label>
-
-                            <input
-                                id="password"
-                                type="password"
-                                placeholder="Enter password"
-                                value={password}
-                                onChange={(e) =>
-                                    setPassword(e.target.value)
-                                }
-                                minLength="6"
-                                required
-                            />
-
-                            <small>
-                                Password must contain at least 6 characters.
-                            </small>
-
-                        </div>
-
-
-                        {/* Role */}
-
-                        <div className="form-group">
-
-                            <label htmlFor="role">
-                                Role
-                            </label>
-
-                            <select
-                                id="role"
-                                value={role}
-                                onChange={(e) =>
-                                    setRole(e.target.value)
-                                }
-                            >
-                                <option value="EMPLOYEE">
-                                    Employee
-                                </option>
-
-                                <option value="ADMIN">
-                                    Administrator
-                                </option>
-
-                            </select>
-
-                        </div>
-
-
-                        {/* Buttons */}
-
-                        <div className="form-actions">
-
-                            <button
-                                type="button"
-                                className="cancel-button"
-                                onClick={() => navigate("/users")}
-                            >
-                                Cancel
-                            </button>
-
-
-                            <button
-                                type="submit"
-                                className="create-button"
-                                disabled={loading}
-                            >
-                                {loading
-                                    ? "Creating..."
-                                    : "Create Employee"
-                                }
-                            </button>
-
-                        </div>
-
-                    </form>
+                    </div>
 
                 </div>
 
-            </div>
+            </main>
 
         </div>
     );

@@ -1,476 +1,531 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
+import Sidebar from "./Sidebar";
+
 import "./Dashboard.css";
 
-function Dashboard() {
 
+function Dashboard() {
     const navigate = useNavigate();
 
     const email = localStorage.getItem("email");
     const role = localStorage.getItem("role");
 
+    const isAdmin = role === "ADMIN";
+
     const [users, setUsers] = useState([]);
     const [currentUser, setCurrentUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const isAdmin = role === "ADMIN";
-
-
-    // =========================
-    // LOAD DASHBOARD DATA
-    // =========================
+    /* =====================================================
+       LOAD DASHBOARD DATA
+    ===================================================== */
 
     useEffect(() => {
-
         const fetchDashboardData = async () => {
-
             try {
-
                 if (isAdmin) {
-
-                    // =========================
                     // ADMIN
-                    // =========================
-
                     const response = await api.get("/users");
 
                     setUsers(response.data);
 
-                    // Find logged-in admin
                     const loggedInUser = response.data.find(
                         (user) => user.email === email
                     );
 
                     setCurrentUser(loggedInUser);
-
                 } else {
-
-                    // =========================
                     // EMPLOYEE
-                    // =========================
-
                     const response = await api.get("/profile/me");
 
                     setCurrentUser(response.data);
                 }
-
             } catch (error) {
-
                 console.error(
                     "Could not load dashboard data:",
                     error
                 );
-
             } finally {
-
                 setLoading(false);
             }
         };
 
         fetchDashboardData();
-
     }, [email, isAdmin]);
 
 
-    // =========================
-    // ADMIN STATISTICS
-    // =========================
+    /* =====================================================
+       ADMIN STATISTICS
+    ===================================================== */
 
-    const adminCount = users.filter(
-        (user) => user.role === "ADMIN"
-    ).length;
+    const totalUsers = users.length;
 
     const employeeCount = users.filter(
         (user) => user.role === "EMPLOYEE"
     ).length;
 
+    const adminCount = users.filter(
+        (user) => user.role === "ADMIN"
+    ).length;
 
-    // =========================
-    // LOGOUT
-    // =========================
 
-    const handleLogout = () => {
+    /* =====================================================
+       USER INFORMATION
+    ===================================================== */
 
-        localStorage.clear();
+    const displayName =
+        currentUser?.name ||
+        email?.split("@")[0] ||
+        "User";
 
-        navigate("/");
+    const initial =
+        displayName.charAt(0).toUpperCase();
 
-    };
 
+    /* =====================================================
+       EMPLOYEE QUICK ACTIONS
+    ===================================================== */
+
+    const employeeActions = [
+        {
+            title: "My Profile",
+            description: "View personal details",
+            icon: "◉",
+            path: "/profile"
+        },
+        {
+            title: "Attendance",
+            description: "Check attendance",
+            icon: "✓",
+            path: "/attendance"
+        },
+        {
+            title: "My Leave",
+            description: "Manage leave requests",
+            icon: "▤",
+            path: "/leave"
+        },
+        {
+            title: "Support",
+            description: "Get help and support",
+            icon: "?",
+            path: "/support"
+        }
+    ];
+
+
+    /* =====================================================
+       ADMIN QUICK ACTIONS
+    ===================================================== */
+
+    const adminActions = [
+        {
+            title: "Employees",
+            description: "Manage employee records",
+            icon: "♙",
+            path: "/users"
+        },
+
+        {
+            title: "Leave Management",
+            description: "Review leave requests",
+            icon: "▤",
+            path: "/leave-management"
+        },
+        {
+            title: "Support Management",
+            description: "Manage support requests",
+            icon: "?",
+            path: "/support-management"
+        }
+    ];
+
+
+    const quickActions = isAdmin
+        ? adminActions
+        : employeeActions;
+
+
+    /* =====================================================
+       LOADING
+    ===================================================== */
+
+    if (loading) {
+        return (
+            <div className="dashboard-loading-page">
+
+                <div className="dashboard-spinner"></div>
+
+                <p>Loading dashboard...</p>
+
+            </div>
+        );
+    }
+
+
+    /* =====================================================
+       MAIN DASHBOARD
+    ===================================================== */
 
     return (
-
         <div className="dashboard-page">
 
-
-            {/* =========================
+            {/* =================================================
                 SIDEBAR
-            ========================= */}
+            ================================================= */}
 
-            <aside className="sidebar">
-
-                <div className="sidebar-logo">
-
-                    <div className="sidebar-logo-box">
-                        EMS
-                    </div>
-
-                    <span>
-                        Employee Management
-                    </span>
-
-                </div>
+            <Sidebar />
 
 
-                <nav className="sidebar-nav">
-
-                    {/* Dashboard */}
-
-                    <button
-                        className="nav-item active"
-                        onClick={() =>
-                            navigate("/dashboard")
-                        }
-                    >
-
-                        <span>▣</span>
-
-                        Dashboard
-
-                    </button>
-
-
-                    {/* My Profile - EMPLOYEE ONLY */}
-
-                    {!isAdmin && (
-
-                        <button
-                            className="nav-item"
-                            onClick={() =>
-                                navigate("/profile")
-                            }
-                        >
-
-                            <span>👤</span>
-
-                            My Profile
-
-                        </button>
-
-                    )}
-
-
-                    {/* Employees - ADMIN ONLY */}
-
-                    {isAdmin && (
-
-                        <button
-                            className="nav-item"
-                            onClick={() =>
-                                navigate("/users")
-                            }
-                        >
-
-                            <span>☷</span>
-
-                            Employees
-
-                        </button>
-
-                    )}
-                    {!isAdmin && (
-                        <button
-                            className="nav-item"
-                            onClick={() =>
-                                navigate("/attendance")
-                            }
-                        >
-                            <span>📊</span>
-                            My Attendance
-                        </button>
-                    )}
-
-                </nav>
-
-
-                {/* =========================
-                    SIDEBAR USER
-                ========================= */}
-
-                <div className="sidebar-bottom">
-
-                    <div className="sidebar-user">
-
-                        <div className="user-avatar">
-
-                            {email
-                                ?.charAt(0)
-                                .toUpperCase()}
-
-                        </div>
-
-
-                        <div className="sidebar-user-info">
-
-                            <strong>
-                                {role}
-                            </strong>
-
-                            <small>
-                                {email}
-                            </small>
-
-                        </div>
-
-                    </div>
-
-
-                    <button
-                        className="logout-button"
-                        onClick={handleLogout}
-                    >
-
-                        Logout
-
-                    </button>
-
-                </div>
-
-            </aside>
-
-
-            {/* =========================
-                MAIN CONTENT
-            ========================= */}
+            {/* =================================================
+                MAIN
+            ================================================= */}
 
             <main className="dashboard-main">
 
 
-                {/* =========================
-                    HEADER
-                ========================= */}
+                {/* =================================================
+                    TOP HEADER
+                ================================================= */}
 
-                <header className="dashboard-header">
+                <header className="dashboard-topbar">
 
-                    <div>
+                    <div className="dashboard-heading">
+
+                        <span className="dashboard-label">
+                            {isAdmin
+                                ? "ADMIN DASHBOARD"
+                                : "MY WORKSPACE"}
+                        </span>
 
                         <h1>
-
-                            {isAdmin
-                                ? "Dashboard"
-                                : "My Dashboard"}
-
+                            Good morning, {displayName}
+                            <span className="heading-wave">
+                                👋
+                            </span>
                         </h1>
 
                         <p>
-                            Welcome back, {email}
+                            {isAdmin
+                                ? "Here's an overview of your employee management system."
+                                : "Here's what's happening with your workspace today."}
                         </p>
 
                     </div>
 
 
-                    <div
-                        className={
-                            isAdmin
-                                ? "header-role admin-role"
-                                : "header-role employee-role"
-                        }
-                    >
+                    <div className="dashboard-user-area">
 
-                        {role}
+                        <button
+                            className="notification-button"
+                            type="button"
+                            aria-label="Notifications"
+                        >
+                            ♧
+
+                            <span className="notification-dot"></span>
+                        </button>
+
+
+                        <div className="top-user">
+
+                            <div className="top-user-avatar">
+
+                                {currentUser?.profilePhotoUrl ? (
+                                    <img
+                                        src={`http://localhost:8080${currentUser.profilePhotoUrl}`}
+                                        alt="Profile"
+                                    />
+                                ) : (
+                                    initial
+                                )}
+
+                            </div>
+
+
+                            <div className="top-user-info">
+
+                                <strong>
+                                    {displayName}
+                                </strong>
+
+                                <span>
+                                    {role}
+                                </span>
+
+                            </div>
+
+                        </div>
 
                     </div>
 
                 </header>
 
 
-                {/* =====================================================
+                {/* =================================================
                     ADMIN DASHBOARD
-                ===================================================== */}
+                ================================================= */}
 
                 {isAdmin ? (
 
                     <>
 
-                        {/* =========================
-                            WELCOME
-                        ========================= */}
+                        {/* ================================
+                            ADMIN WELCOME
+                        ================================= */}
 
-                        <section className="welcome-card">
+                        <section className="welcome-banner">
 
-                            <div>
+                            <div className="welcome-content">
+
+                                <span className="welcome-label">
+                                    MANAGEMENT OVERVIEW
+                                </span>
 
                                 <h2>
-                                    Welcome back! 👋
+                                    Welcome back, {displayName}!
                                 </h2>
 
                                 <p>
-                                    Here's an overview of your
-                                    employee management system.
+                                    Manage employees, monitor
+                                    attendance, review leave and
+                                    handle support requests from
+                                    one place.
                                 </p>
 
                             </div>
 
 
-                            <button
-                                className="primary-button"
-                                onClick={() =>
-                                    navigate("/users")
-                                }
-                            >
+                            <div className="welcome-avatar">
 
-                                Manage Employees
-
-                            </button>
-
-                        </section>
-
-
-                        {/* =========================
-                            STATISTICS
-                        ========================= */}
-
-                        <section className="stats-grid">
-
-
-                            {/* Total Employees */}
-
-                            <div className="stat-card">
-
-                                <div className="stat-icon">
-                                    👥
-                                </div>
-
-                                <div>
-
-                                    <p>
-                                        Total Employees
-                                    </p>
-
-                                    <h2>
-
-                                        {loading
-                                            ? "..."
-                                            : users.length}
-
-                                    </h2>
-
-                                </div>
-
-                            </div>
-
-
-                            {/* Administrators */}
-
-                            <div className="stat-card">
-
-                                <div className="stat-icon">
-                                    🛡
-                                </div>
-
-                                <div>
-
-                                    <p>
-                                        Administrators
-                                    </p>
-
-                                    <h2>
-
-                                        {loading
-                                            ? "..."
-                                            : adminCount}
-
-                                    </h2>
-
-                                </div>
-
-                            </div>
-
-
-                            {/* Employees */}
-
-                            <div className="stat-card">
-
-                                <div className="stat-icon">
-                                    👤
-                                </div>
-
-                                <div>
-
-                                    <p>
-                                        Employees
-                                    </p>
-
-                                    <h2>
-
-                                        {loading
-                                            ? "..."
-                                            : employeeCount}
-
-                                    </h2>
-
-                                </div>
+                                {currentUser?.profilePhotoUrl ? (
+                                    <img
+                                        src={`http://localhost:8080${currentUser.profilePhotoUrl}`}
+                                        alt="Profile"
+                                    />
+                                ) : (
+                                    initial
+                                )}
 
                             </div>
 
                         </section>
 
 
-                        {/* =========================
+                        {/* ================================
+                            ADMIN STATISTICS
+                        ================================= */}
+
+                        <section className="statistics-section">
+
+                            <div className="section-title">
+
+                                <div>
+                                    <span>OVERVIEW</span>
+
+                                    <h2>
+                                        System at a glance
+                                    </h2>
+                                </div>
+
+                            </div>
+
+
+                            <div className="statistics-grid">
+
+
+                                {/* Total Users */}
+
+                                <div className="stat-card">
+
+                                    <div className="stat-card-icon">
+                                        ♙
+                                    </div>
+
+                                    <div className="stat-card-content">
+
+                                        <span>
+                                            Total Users
+                                        </span>
+
+                                        <strong>
+                                            {totalUsers}
+                                        </strong>
+
+                                        <small>
+                                            Registered accounts
+                                        </small>
+
+                                    </div>
+
+                                </div>
+
+
+                                {/* Employees */}
+
+                                <div className="stat-card green-stat">
+
+                                    <div className="stat-card-icon">
+                                        ✓
+                                    </div>
+
+                                    <div className="stat-card-content">
+
+                                        <span>
+                                            Employees
+                                        </span>
+
+                                        <strong>
+                                            {employeeCount}
+                                        </strong>
+
+                                        <small>
+                                            Active employees
+                                        </small>
+
+                                    </div>
+
+                                </div>
+
+
+                                {/* Administrators */}
+
+                                <div className="stat-card">
+
+                                    <div className="stat-card-icon">
+                                        ◆
+                                    </div>
+
+                                    <div className="stat-card-content">
+
+                                        <span>
+                                            Administrators
+                                        </span>
+
+                                        <strong>
+                                            {adminCount}
+                                        </strong>
+
+                                        <small>
+                                            System administrators
+                                        </small>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </section>
+
+
+                        {/* ================================
+                            ADMIN QUICK ACTIONS
+                        ================================= */}
+
+                        <section className="quick-section">
+
+                            <div className="section-title">
+
+                                <div>
+
+                                    <span>
+                                        QUICK ACTIONS
+                                    </span>
+
+                                    <h2>
+                                        What would you like to manage?
+                                    </h2>
+
+                                </div>
+
+                            </div>
+
+
+                            <div className="quick-actions-grid">
+
+                                {quickActions.map((action) => (
+
+                                    <button
+                                        key={action.path}
+                                        className="quick-action-card"
+                                        onClick={() =>
+                                            navigate(action.path)
+                                        }
+                                    >
+
+                                        <div className="quick-action-icon">
+                                            {action.icon}
+                                        </div>
+
+
+                                        <div className="quick-action-content">
+
+                                            <strong>
+                                                {action.title}
+                                            </strong>
+
+                                            <span>
+                                                {action.description}
+                                            </span>
+
+                                        </div>
+
+
+                                        <span className="quick-action-arrow">
+                                            →
+                                        </span>
+
+                                    </button>
+
+                                ))}
+
+                            </div>
+
+                        </section>
+
+
+                        {/* ================================
                             RECENT EMPLOYEES
-                        ========================= */}
+                        ================================= */}
 
-                        <section className="recent-card">
+                        <section className="recent-section">
 
-                            <div className="section-header">
+                            <div className="recent-card">
 
-                                <div>
+                                <div className="card-header">
 
-                                    <h2>
-                                        Employees
-                                    </h2>
+                                    <div>
 
-                                    <p>
-                                        Recently available employee
-                                        accounts
-                                    </p>
+                                        <span>
+                                            EMPLOYEE DIRECTORY
+                                        </span>
+
+                                        <h2>
+                                            Recent employees
+                                        </h2>
+
+                                    </div>
+
+
+                                    <button
+                                        className="view-all-button"
+                                        onClick={() =>
+                                            navigate("/users")
+                                        }
+                                    >
+                                        View all →
+                                    </button>
 
                                 </div>
 
 
-                                <button
-                                    className="view-all-button"
-                                    onClick={() =>
-                                        navigate("/users")
-                                    }
-                                >
-
-                                    View All
-
-                                </button>
-
-                            </div>
-
-
-                            {loading ? (
-
-                                <div className="dashboard-loading">
-                                    Loading employees...
-                                </div>
-
-                            ) : users.length === 0 ? (
-
-                                <div className="dashboard-empty">
-                                    No employees found.
-                                </div>
-
-                            ) : (
-
-                                <div className="employee-preview">
+                                <div className="employee-list">
 
                                     {users
-                                        .slice(0, 4)
+                                        .slice(0, 5)
                                         .map((user) => (
 
                                             <div
@@ -478,9 +533,9 @@ function Dashboard() {
                                                 key={user.id}
                                             >
 
-                                                <div className="employee-info">
+                                                <div className="employee-row-user">
 
-                                                    <div className="employee-avatar">
+                                                    <div className="employee-row-avatar">
 
                                                         {user.name
                                                             ?.charAt(0)
@@ -504,7 +559,7 @@ function Dashboard() {
                                                 </div>
 
 
-                                                <span className="role-badge">
+                                                <span className="employee-role-badge">
 
                                                     {user.role}
 
@@ -516,7 +571,33 @@ function Dashboard() {
 
                                 </div>
 
-                            )}
+                            </div>
+
+
+                            {/* About card */}
+
+                            <div className="about-dashboard-card">
+
+                                <div className="about-icon">
+                                    EMS
+                                </div>
+
+                                <span>
+                                    EMPLOYEE MANAGEMENT SYSTEM
+                                </span>
+
+                                <h2>
+                                    Simple. Secure. Organized.
+                                </h2>
+
+                                <p>
+                                    Manage your organization's
+                                    employees, attendance, leave
+                                    requests and support activities
+                                    from one centralized platform.
+                                </p>
+
+                            </div>
 
                         </section>
 
@@ -524,35 +605,189 @@ function Dashboard() {
 
                 ) : (
 
-                    /* =====================================================
+                    /* =================================================
                        EMPLOYEE DASHBOARD
-                    ===================================================== */
+                    ================================================= */
 
                     <>
 
-                        {/* =========================
+
+                        {/* ================================
                             EMPLOYEE WELCOME
-                        ========================= */}
+                        ================================= */}
 
-                        <section className="employee-welcome-card">
+                        <section className="employee-welcome-banner">
 
-                            <div className="employee-welcome-content">
+                            <div>
 
-                                <div className="employee-welcome-icon">
-                                    👋
-                                </div>
+                                <span>
+                                    MY WORKSPACE
+                                </span>
+
+                                <h2>
+                                    Welcome, {displayName}!
+                                </h2>
+
+                                <p>
+                                    Access your profile, attendance,
+                                    leave and support from one place.
+                                </p>
+
+                            </div>
+
+
+                            <div className="employee-banner-avatar">
+
+                                {currentUser?.profilePhotoUrl ? (
+                                    <img
+                                        src={`http://localhost:8080${currentUser.profilePhotoUrl}`}
+                                        alt="Profile"
+                                    />
+                                ) : (
+                                    initial
+                                )}
+
+                            </div>
+
+                        </section>
+
+
+
+
+                        {/* ================================
+                            EMPLOYEE QUICK ACTIONS
+                        ================================= */}
+
+                        <section className="quick-section">
+
+                            <div className="section-title">
 
                                 <div>
 
+                                    <span>
+                                        QUICK ACCESS
+                                    </span>
+
                                     <h2>
-                                        Welcome back!
+                                        Manage your workspace
                                     </h2>
 
-                                    <p>
-                                        You are signed in as an
-                                        Employee. Here's your
-                                        account overview.
-                                    </p>
+                                </div>
+
+                            </div>
+
+
+                            <div className="quick-actions-grid">
+
+                                {quickActions.map((action) => (
+
+                                    <button
+                                        key={action.path}
+                                        className="quick-action-card"
+                                        onClick={() =>
+                                            navigate(action.path)
+                                        }
+                                    >
+
+                                        <div className="quick-action-icon">
+                                            {action.icon}
+                                        </div>
+
+
+                                        <div className="quick-action-content">
+
+                                            <strong>
+                                                {action.title}
+                                            </strong>
+
+                                            <span>
+                                                {action.description}
+                                            </span>
+
+                                        </div>
+
+
+                                        <span className="quick-action-arrow">
+                                            →
+                                        </span>
+
+                                    </button>
+
+                                ))}
+
+                            </div>
+
+                        </section>
+
+
+                        {/* ================================
+                            PERSONAL INFORMATION
+                        ================================= */}
+
+                        <section className="personal-section">
+
+                            <div className="personal-card">
+
+                                <div className="card-header">
+
+                                    <div>
+
+                                        <span>
+                                            PERSONAL INFORMATION
+                                        </span>
+
+                                        <h2>
+                                            My Profile
+                                        </h2>
+
+                                    </div>
+
+
+                                    <button
+                                        className="view-all-button"
+                                        onClick={() =>
+                                            navigate("/profile")
+                                        }
+                                    >
+                                        View profile →
+                                    </button>
+
+                                </div>
+
+
+                                <div className="profile-summary">
+
+                                    <div className="profile-summary-avatar">
+
+                                        {currentUser?.profilePhotoUrl ? (
+                                            <img
+                                                src={`http://localhost:8080${currentUser.profilePhotoUrl}`}
+                                                alt="Profile"
+                                            />
+                                        ) : (
+                                            initial
+                                        )}
+
+                                    </div>
+
+
+                                    <div className="profile-summary-info">
+
+                                        <h3>
+                                            {currentUser?.name ||
+                                                displayName}
+                                        </h3>
+
+                                        <p>
+                                            {currentUser?.email ||
+                                                email}
+                                        </p>
+
+                                        <span className="profile-role">
+                                            EMPLOYEE
+                                        </span>
+
+                                    </div>
 
                                 </div>
 
@@ -561,194 +796,70 @@ function Dashboard() {
                         </section>
 
 
-                        {/* =========================
-                            EMPLOYEE STATS
-                        ========================= */}
+                        {/* ================================
+                            EMPLOYEE INFO CARDS
+                        ================================= */}
 
-                        <section className="stats-grid">
+                        <section className="employee-info-grid">
 
+                            <div className="info-mini-card">
 
-                            {/* Role */}
-
-                            <div className="stat-card">
-
-                                <div className="stat-icon">
-                                    👤
-                                </div>
-
-                                <div>
-
-                                    <p>
-                                        My Role
-                                    </p>
-
-                                    <h2 className="stat-role">
-                                        Employee
-                                    </h2>
-
-                                </div>
-
-                            </div>
-
-
-                            {/* Account Status */}
-
-                            <div className="stat-card">
-
-                                <div className="stat-icon">
+                                <div className="info-mini-icon green">
                                     ✓
                                 </div>
 
                                 <div>
 
-                                    <p>
-                                        Account Status
-                                    </p>
+                                    <span>
+                                        ACCOUNT STATUS
+                                    </span>
 
-                                    <h2 className="active-status">
+                                    <strong>
                                         Active
-                                    </h2>
+                                    </strong>
 
                                 </div>
 
                             </div>
 
 
-                            {/* Access Level */}
+                            <div className="info-mini-card">
 
-                            <div className="stat-card">
-
-                                <div className="stat-icon">
-                                    🔐
+                                <div className="info-mini-icon">
+                                    ◉
                                 </div>
 
                                 <div>
 
-                                    <p>
-                                        Access Level
-                                    </p>
+                                    <span>
+                                        ACCESS LEVEL
+                                    </span>
 
-                                    <h2 className="stat-role">
-                                        Standard
-                                    </h2>
+                                    <strong>
+                                        Employee
+                                    </strong>
 
                                 </div>
 
                             </div>
 
-                        </section>
 
+                            <div className="info-mini-card">
 
-                        {/* =========================
-                            MY ACCOUNT
-                        ========================= */}
-
-                        <section className="account-card">
-
-                            <div className="section-header">
+                                <div className="info-mini-icon">
+                                    #
+                                </div>
 
                                 <div>
 
-                                    <h2>
-                                        My Account
-                                    </h2>
+                                    <span>
+                                        ACCOUNT EMAIL
+                                    </span>
 
-                                    <p>
-                                        Your employee account
-                                        information
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-
-                            <div className="account-details">
-
-
-                                {/* =========================
-                                    PROFILE AVATAR
-                                ========================= */}
-
-                                <div className="account-avatar">
-
-                                    {currentUser?.profilePhotoUrl ? (
-
-                                        <img
-                                            src={`http://localhost:8080${currentUser.profilePhotoUrl}`}
-                                            alt="Profile"
-                                            className="account-avatar-image"
-                                        />
-
-                                    ) : (
-
-                                        (
-                                            currentUser?.name ||
-                                            email ||
-                                            "U"
-                                        )
-                                            .charAt(0)
-                                            .toUpperCase()
-
-                                    )}
-
-                                </div>
-
-
-                                {/* =========================
-                                    ACCOUNT INFORMATION
-                                ========================= */}
-
-                                <div className="account-info">
-
-
-                                    {/* Full Name */}
-
-                                    <div className="account-item">
-
-                                        <span>
-                                            Full Name
-                                        </span>
-
-                                        <strong>
-                                            {currentUser?.name ||
-                                                "Employee"}
-                                        </strong>
-
-                                    </div>
-
-
-                                    {/* Email */}
-
-                                    <div className="account-item">
-
-                                        <span>
-                                            Email Address
-                                        </span>
-
-                                        <strong>
-                                            {currentUser?.email ||
-                                                email}
-                                        </strong>
-
-                                    </div>
-
-
-                                    {/* Role */}
-
-                                    <div className="account-item">
-
-                                        <span>
-                                            Role
-                                        </span>
-
-                                        <strong>
-                                            {currentUser?.role ||
-                                                role}
-                                        </strong>
-
-                                    </div>
-
+                                    <strong>
+                                        {currentUser?.email ||
+                                            email}
+                                    </strong>
 
                                 </div>
 
@@ -757,7 +868,6 @@ function Dashboard() {
                         </section>
 
                     </>
-
                 )}
 
             </main>

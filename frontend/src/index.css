@@ -1,267 +1,36 @@
-/* ================================
-   EMPLOYEE MANAGEMENT
-================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-.employee-page {
-    min-height: 100vh;
-    padding: 45px 7%;
-    background: #f5f7fb;
-    color: #1f2937;
+* {
+    box-sizing: border-box;
 }
 
-/* HEADER */
-
-.employee-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 35px;
-}
-
-.employee-header h1 {
+html,
+body,
+#root {
     margin: 0;
-    font-size: 32px;
-    font-weight: 700;
+    padding: 0;
+    min-height: 100%;
 }
 
-.employee-header p {
-    margin-top: 8px;
-    color: #6b7280;
+body {
+    margin: 0;
+
+    font-family: "Inter", Arial, sans-serif;
+
+    background: #f4f6f5;
+
+    color: #1f2937;
+
+    -webkit-font-smoothing: antialiased;
 }
 
-.header-actions {
-    display: flex;
-    gap: 12px;
+button,
+input,
+textarea,
+select {
+    font-family: inherit;
 }
 
-/* BUTTONS */
-
-.primary-btn,
-.secondary-btn,
-.edit-btn,
-.delete-btn {
-    border: none;
-    border-radius: 7px;
-    padding: 10px 16px;
+button {
     cursor: pointer;
-    font-size: 14px;
-    transition: 0.2s ease;
-}
-
-.primary-btn {
-    background: #2563eb;
-    color: white;
-}
-
-.primary-btn:hover {
-    background: #1d4ed8;
-}
-
-.secondary-btn {
-    background: white;
-    color: #374151;
-    border: 1px solid #d1d5db;
-}
-
-.secondary-btn:hover {
-    background: #f3f4f6;
-}
-
-/* MESSAGE */
-
-.message {
-    background: #ecfdf5;
-    color: #047857;
-    border: 1px solid #a7f3d0;
-    padding: 12px 16px;
-    border-radius: 7px;
-    margin-bottom: 20px;
-}
-
-/* TOOLBAR */
-
-.toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 18px;
-}
-
-.toolbar input {
-    width: 360px;
-    padding: 12px 15px;
-    border: 1px solid #d1d5db;
-    border-radius: 7px;
-    font-size: 14px;
-    outline: none;
-}
-
-.toolbar input:focus {
-    border-color: #2563eb;
-}
-
-.employee-count {
-    color: #6b7280;
-    font-size: 14px;
-}
-
-/* TABLE */
-
-.table-card {
-    background: white;
-    border-radius: 10px;
-    border: 1px solid #e5e7eb;
-    overflow: hidden;
-}
-
-.table-container {
-    overflow-x: auto;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-thead {
-    background: #f9fafb;
-}
-
-th {
-    text-align: left;
-    padding: 16px 20px;
-    font-size: 13px;
-    color: #6b7280;
-    font-weight: 600;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-td {
-    padding: 17px 20px;
-    border-bottom: 1px solid #f0f0f0;
-    font-size: 14px;
-}
-
-tbody tr:hover {
-    background: #fafafa;
-}
-
-/* EMPLOYEE */
-
-.employee-id {
-    color: #6b7280;
-    font-size: 13px;
-}
-
-.employee-name {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: #e5e7eb;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    color: #374151;
-}
-
-/* ROLE */
-
-.role {
-    display: inline-block;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.role.admin {
-    background: #ede9fe;
-    color: #6d28d9;
-}
-
-.role.employee {
-    background: #dbeafe;
-    color: #1d4ed8;
-}
-
-/* ACTIONS */
-
-.action-buttons {
-    display: flex;
-    gap: 8px;
-}
-
-.edit-btn {
-    background: #eff6ff;
-    color: #2563eb;
-}
-
-.edit-btn:hover {
-    background: #dbeafe;
-}
-
-.delete-btn {
-    background: #fef2f2;
-    color: #dc2626;
-}
-
-.delete-btn:hover {
-    background: #fee2e2;
-}
-
-/* EMPTY STATE */
-
-.empty-state {
-    text-align: center;
-    padding: 70px 20px;
-}
-
-.empty-state h3 {
-    margin-bottom: 8px;
-    font-size: 20px;
-}
-
-.empty-state p {
-    color: #6b7280;
-    margin-bottom: 22px;
-}
-
-/* RESPONSIVE */
-
-@media (max-width: 768px) {
-
-    .employee-page {
-        padding: 25px 20px;
-    }
-
-    .employee-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 20px;
-    }
-
-    .toolbar {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 12px;
-    }
-
-    .toolbar input {
-        width: auto;
-    }
-
-    .header-actions {
-        width: 100%;
-    }
-
-    .header-actions button {
-        flex: 1;
-    }
 }

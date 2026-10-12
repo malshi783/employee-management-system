@@ -1,80 +1,60 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import api from "../api/api";
+import Sidebar from "./Sidebar";
+
 import "./UserList.css";
 
 function UserList() {
 
-    const [users, setUsers] = useState([]);
-    const [message, setMessage] = useState("");
-    const [search, setSearch] = useState("");
-    const [loading, setLoading] = useState(true);
-
     const navigate = useNavigate();
 
-    const role = localStorage.getItem("role");
-    const isAdmin = role === "ADMIN";
+    const [users, setUsers] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [message, setMessage] = useState("");
 
-    // =========================
-    // FETCH USERS
-    // =========================
-
-    const fetchUsers = async () => {
+    const loadUsers = async () => {
 
         try {
 
             setLoading(true);
-            setMessage("");
 
             const response = await api.get("/users");
-
-            console.log("Users response:", response.data);
 
             setUsers(response.data);
 
         } catch (error) {
 
-            console.error("Error fetching users:", error);
+            console.error(
+                "Error loading users:",
+                error
+            );
 
-            if (
-                error.response?.status === 401 ||
-                error.response?.status === 403
-            ) {
-                setMessage(
-                    "Your login session is invalid or expired. Please login again."
-                );
-            } else {
-                setMessage("Could not load employees.");
-            }
+            setMessage(
+                "Failed to load employees."
+            );
 
         } finally {
 
             setLoading(false);
-
         }
     };
 
 
-    // =========================
-    // LOAD USERS
-    // =========================
-
     useEffect(() => {
-        fetchUsers();
+        loadUsers();
     }, []);
 
 
-    // =========================
-    // DELETE USER
-    // =========================
-
     const handleDelete = async (id) => {
 
-        const confirmDelete = window.confirm(
+        const confirmed = window.confirm(
             "Are you sure you want to delete this employee?"
         );
 
-        if (!confirmDelete) {
+        if (!confirmed) {
             return;
         }
 
@@ -82,51 +62,92 @@ function UserList() {
 
             await api.delete(`/users/${id}`);
 
-            setMessage("Employee deleted successfully.");
+            setMessage(
+                "Employee deleted successfully."
+            );
 
-            fetchUsers();
+            await loadUsers();
 
         } catch (error) {
 
-            console.error("Delete error:", error);
+            console.error(
+                "Error deleting employee:",
+                error
+            );
 
-            setMessage("Could not delete employee.");
-
+            setMessage(
+                "Failed to delete employee."
+            );
         }
     };
 
 
-    // =========================
-    // SEARCH
-    // =========================
-
     const filteredUsers = users.filter((user) => {
 
-        const searchText = search.toLowerCase();
+        const name =
+            user.name?.toLowerCase() || "";
+
+        const email =
+            user.email?.toLowerCase() || "";
+
+        const role =
+            user.role?.toLowerCase() || "";
+
+        const search =
+            searchTerm.toLowerCase();
 
         return (
-            user.name?.toLowerCase().includes(searchText) ||
-            user.email?.toLowerCase().includes(searchText) ||
-            user.role?.toLowerCase().includes(searchText)
+            name.includes(search) ||
+            email.includes(search) ||
+            role.includes(search)
         );
-
     });
+
+
+    const getInitial = (name) => {
+
+        if (!name) {
+            return "U";
+        }
+
+        return name
+            .charAt(0)
+            .toUpperCase();
+    };
+
+
+    if (loading) {
+
+        return (
+            <div className="app-layout">
+
+                <Sidebar />
+
+                <main className="employee-page">
+
+                    <div className="employee-loading">
+                        Loading employees...
+                    </div>
+
+                </main>
+
+            </div>
+        );
+    }
 
 
     return (
 
-        <div className="users-page">
+        <div className="app-layout">
 
-            <div className="users-container">
+            <Sidebar />
 
-                {/* =========================
-                    HEADER
-                ========================= */}
+            <main className="employee-page">
 
-                <header className="users-header">
+                {/* HEADER */}
+                <div className="employee-header">
 
                     <div>
-
                         <h1>
                             Employee Management
                         </h1>
@@ -134,56 +155,36 @@ function UserList() {
                         <p>
                             Manage employees and their account information
                         </p>
-
                     </div>
 
-
-                    <div className="users-header-actions">
+                    <div className="header-actions">
 
                         <button
-                            className="secondary-button"
-                            onClick={() => navigate("/dashboard")}
+                            className="primary-btn"
+                            onClick={() =>
+                                navigate("/add-employee")
+                            }
                         >
-                            ← Dashboard
+                            + Add Employee
                         </button>
 
-
-                        {isAdmin && (
-
-                            <button
-                                className="primary-button"
-                                onClick={() => navigate("/add-employee")}
-                            >
-                                + Add Employee
-                            </button>
-
-                        )}
-
                     </div>
 
-                </header>
+                </div>
 
 
-                {/* =========================
-                    MESSAGE
-                ========================= */}
-
+                {/* MESSAGE */}
                 {message && (
-
-                    <div className="users-message">
+                    <div className="message">
                         {message}
                     </div>
-
                 )}
 
 
-                {/* =========================
-                    TOOLBAR
-                ========================= */}
+                {/* TOOLBAR */}
+                <div className="toolbar">
 
-                <div className="users-toolbar">
-
-                    <div className="search-wrapper">
+                    <div className="search-box">
 
                         <span className="search-icon">
                             ⌕
@@ -192,143 +193,113 @@ function UserList() {
                         <input
                             type="text"
                             placeholder="Search by name, email or role..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
+                            value={searchTerm}
+                            onChange={(e) =>
+                                setSearchTerm(
+                                    e.target.value
+                                )
+                            }
                         />
 
                     </div>
 
-
-                    <span className="employee-count">
-
-                        {filteredUsers.length} employee
-                        {filteredUsers.length !== 1 ? "s" : ""}
-
-                    </span>
+                    <div className="employee-count">
+                        {filteredUsers.length}{" "}
+                        {filteredUsers.length === 1
+                            ? "employee"
+                            : "employees"}
+                    </div>
 
                 </div>
 
 
-                {/* =========================
-                    TABLE CARD
-                ========================= */}
+                {/* TABLE */}
+                <div className="table-card">
 
-                <div className="users-card">
+                    {filteredUsers.length === 0 ? (
 
-                    {loading ? (
+                        <div className="empty-state">
 
-                        <div className="users-empty">
-
-                            <div className="loading-spinner"></div>
-
-                            <h2>
-                                Loading employees...
-                            </h2>
-
-                            <p>
-                                Please wait.
-                            </p>
-
-                        </div>
-
-                    ) : filteredUsers.length === 0 ? (
-
-                        <div className="users-empty">
-
-                            <div className="empty-icon">
-                                👥
-                            </div>
-
-                            <h2>
+                            <h3>
                                 No employees found
-                            </h2>
+                            </h3>
 
                             <p>
-
-                                {search
-                                    ? "Try a different search."
-                                    : "There are currently no employees in the system."
-                                }
-
+                                Try changing your search.
                             </p>
-
-
-                            {!search && isAdmin && (
-
-                                <button
-                                    className="primary-button"
-                                    onClick={() =>
-                                        navigate("/add-employee")
-                                    }
-                                >
-                                    + Add First Employee
-                                </button>
-
-                            )}
 
                         </div>
 
                     ) : (
 
-                        <div className="table-wrapper">
+                        <div className="table-container">
 
-                            <table className="users-table">
+                            <table>
 
                                 <thead>
 
-                                    <tr>
+                                <tr>
 
-                                        <th>ID</th>
+                                    <th>ID</th>
 
-                                        <th>Employee</th>
+                                    <th>
+                                        EMPLOYEE
+                                    </th>
 
-                                        <th>Email</th>
+                                    <th>
+                                        EMAIL
+                                    </th>
 
-                                        <th>Role</th>
+                                    <th>
+                                        ROLE
+                                    </th>
 
-                                        {isAdmin && (
-                                            <th>Actions</th>
-                                        )}
+                                    <th>
+                                        ACTIONS
+                                    </th>
 
-                                    </tr>
+                                </tr>
 
                                 </thead>
 
-
                                 <tbody>
 
-                                    {filteredUsers.map((user) => (
+                                {filteredUsers.map(
+                                    (user) => (
 
-                                        <tr key={user.id}>
+                                        <tr
+                                            key={user.id}
+                                        >
 
                                             <td>
-                                                <span className="user-id">
-                                                    #{user.id}
-                                                </span>
+                                                    <span className="employee-id">
+                                                        #{user.id}
+                                                    </span>
                                             </td>
 
 
                                             <td>
 
-                                                <div className="employee-cell">
+                                                <div className="employee-name">
 
-                                                    <div className="employee-avatar">
-
-                                                        {user.name
-                                                            ?.charAt(0)
-                                                            .toUpperCase()}
-
+                                                    <div className="avatar">
+                                                        {getInitial(
+                                                            user.name
+                                                        )}
                                                     </div>
 
                                                     <div>
 
-                                                        <strong>
+                                                        <div className="employee-name-text">
                                                             {user.name}
-                                                        </strong>
+                                                        </div>
 
-                                                        <span>
-                                                            Employee
-                                                        </span>
+                                                        <div className="employee-role-text">
+                                                            {user.role ===
+                                                            "ADMIN"
+                                                                ? "Administrator"
+                                                                : "Employee"}
+                                                        </div>
 
                                                     </div>
 
@@ -338,67 +309,58 @@ function UserList() {
 
 
                                             <td>
+                                                {user.email}
+                                            </td>
 
-                                                <span className="email-text">
-                                                    {user.email}
-                                                </span>
+
+                                            <td>
+
+                                                    <span
+                                                        className={`role ${
+                                                            user.role?.toLowerCase() ||
+                                                            "employee"
+                                                        }`}
+                                                    >
+                                                        {user.role}
+                                                    </span>
 
                                             </td>
 
 
                                             <td>
 
-                                                <span
-                                                    className={
-                                                        user.role === "ADMIN"
-                                                            ? "role-badge admin"
-                                                            : "role-badge employee"
-                                                    }
-                                                >
-                                                    {user.role}
-                                                </span>
+                                                <div className="action-buttons">
+
+                                                    <button
+                                                        className="edit-btn"
+                                                        onClick={() =>
+                                                            navigate(
+                                                                `/users/edit/${user.id}`
+                                                            )
+                                                        }
+                                                    >
+                                                        Edit
+                                                    </button>
+
+                                                    <button
+                                                        className="delete-btn"
+                                                        onClick={() =>
+                                                            handleDelete(
+                                                                user.id
+                                                            )
+                                                        }
+                                                    >
+                                                        Delete
+                                                    </button>
+
+                                                </div>
 
                                             </td>
 
-
-                                            {isAdmin && (
-
-                                                <td>
-
-                                                    <div className="action-buttons">
-
-                                                        <button
-                                                            className="edit-button"
-                                                            onClick={() =>
-                                                                navigate(
-                                                                    `/users/edit/${user.id}`
-                                                                )
-                                                            }
-                                                        >
-                                                            Edit
-                                                        </button>
-
-
-                                                        <button
-                                                            className="delete-button"
-                                                            onClick={() =>
-                                                                handleDelete(
-                                                                    user.id
-                                                                )
-                                                            }
-                                                        >
-                                                            Delete
-                                                        </button>
-
-                                                    </div>
-
-                                                </td>
-
-                                            )}
-
                                         </tr>
 
-                                    ))}
+                                    )
+                                )}
 
                                 </tbody>
 
@@ -410,7 +372,7 @@ function UserList() {
 
                 </div>
 
-            </div>
+            </main>
 
         </div>
     );

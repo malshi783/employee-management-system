@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import api from "../api/api";
+import Sidebar from "./Sidebar";
 import "./LeaveRequest.css";
 
 function LeaveRequest() {
-    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         leaveType: "ANNUAL",
@@ -55,7 +54,9 @@ function LeaveRequest() {
 
             await api.post("/leaves", formData);
 
-            setMessage("Leave request submitted successfully.");
+            setMessage(
+                "Leave request submitted successfully."
+            );
 
             setFormData({
                 leaveType: "ANNUAL",
@@ -64,192 +65,384 @@ function LeaveRequest() {
                 reason: ""
             });
 
-            fetchLeaveRequests();
+            await fetchLeaveRequests();
+
         } catch (err) {
             console.error(err);
 
             if (err.response?.data?.message) {
                 setError(err.response.data.message);
             } else {
-                setError("Failed to submit leave request.");
+                setError(
+                    "Failed to submit leave request."
+                );
             }
+
         } finally {
             setLoading(false);
         }
     };
 
     const getStatusClass = (status) => {
-        if (status === "APPROVED") return "approved";
-        if (status === "REJECTED") return "rejected";
+        if (status === "APPROVED") {
+            return "approved";
+        }
+
+        if (status === "REJECTED") {
+            return "rejected";
+        }
+
         return "pending";
     };
 
     return (
-        <div className="leave-page">
+        <div className="leave-layout">
 
-            <div className="leave-header">
-                <div>
-                    <h1>Leave Management</h1>
-                    <p>Apply for leave and track your requests</p>
+            <Sidebar />
+
+            <main className="leave-main">
+
+                {/* =================================
+                    HEADER
+                ================================= */}
+
+                <div className="leave-header">
+
+                    <div>
+
+                        <span className="leave-page-label">
+                            EMPLOYEE SELF SERVICE
+                        </span>
+
+                        <h1>
+                            My Leave
+                        </h1>
+
+                        <p>
+                            Apply for leave and track your requests.
+                        </p>
+
+                    </div>
+
                 </div>
 
-                <button
-                    className="back-button"
-                    onClick={() => navigate("/dashboard")}
-                >
-                    ← Dashboard
-                </button>
-            </div>
 
-            <div className="leave-container">
+                {/* =================================
+                    CONTENT
+                ================================= */}
 
-                {/* Leave Application Form */}
-                <div className="leave-card">
-                    <h2>Apply for Leave</h2>
+                <div className="leave-container">
 
-                    {message && (
-                        <div className="success-message">
-                            {message}
+                    {/* =================================
+                        LEAVE APPLICATION
+                    ================================= */}
+
+                    <div className="leave-card">
+
+                        <div className="leave-card-header">
+
+                            <div className="leave-card-icon">
+                                +
+                            </div>
+
+                            <div>
+
+                                <h2>
+                                    Apply for Leave
+                                </h2>
+
+                                <p>
+                                    Submit a new leave request.
+                                </p>
+
+                            </div>
+
                         </div>
-                    )}
 
-                    {error && (
-                        <div className="error-message">
-                            {error}
-                        </div>
-                    )}
 
-                    <form onSubmit={handleSubmit}>
+                        {/* MESSAGES */}
 
-                        <div className="form-group">
-                            <label>Leave Type</label>
+                        {message && (
+                            <div className="success-message">
+                                <span>✓</span>
+                                {message}
+                            </div>
+                        )}
 
-                            <select
-                                name="leaveType"
-                                value={formData.leaveType}
-                                onChange={handleChange}
-                                required
+                        {error && (
+                            <div className="error-message">
+                                <span>!</span>
+                                {error}
+                            </div>
+                        )}
+
+
+                        {/* FORM */}
+
+                        <form onSubmit={handleSubmit}>
+
+                            {/* Leave Type */}
+
+                            <div className="form-group">
+
+                                <label>
+                                    Leave Type
+                                </label>
+
+                                <select
+                                    name="leaveType"
+                                    value={formData.leaveType}
+                                    onChange={handleChange}
+                                    required
+                                >
+
+                                    <option value="ANNUAL">
+                                        Annual Leave
+                                    </option>
+
+                                    <option value="CASUAL">
+                                        Casual Leave
+                                    </option>
+
+                                    <option value="MEDICAL">
+                                        Medical Leave
+                                    </option>
+
+                                    <option value="OTHER">
+                                        Other
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            {/* Dates */}
+
+                            <div className="date-row">
+
+                                <div className="form-group">
+
+                                    <label>
+                                        Start Date
+                                    </label>
+
+                                    <input
+                                        type="date"
+                                        name="startDate"
+                                        value={formData.startDate}
+                                        onChange={handleChange}
+                                        required
+                                    />
+
+                                </div>
+
+
+                                <div className="form-group">
+
+                                    <label>
+                                        End Date
+                                    </label>
+
+                                    <input
+                                        type="date"
+                                        name="endDate"
+                                        value={formData.endDate}
+                                        onChange={handleChange}
+                                        required
+                                    />
+
+                                </div>
+
+                            </div>
+
+
+                            {/* Reason */}
+
+                            <div className="form-group">
+
+                                <label>
+                                    Reason
+                                </label>
+
+                                <textarea
+                                    name="reason"
+                                    value={formData.reason}
+                                    onChange={handleChange}
+                                    placeholder="Enter reason for leave"
+                                    maxLength="500"
+                                    rows="5"
+                                    required
+                                />
+
+                                <small>
+                                    Maximum 500 characters
+                                </small>
+
+                            </div>
+
+
+                            {/* Submit */}
+
+                            <button
+                                type="submit"
+                                className="submit-button"
+                                disabled={loading}
                             >
-                                <option value="ANNUAL">Annual Leave</option>
-                                <option value="CASUAL">Casual Leave</option>
-                                <option value="MEDICAL">Medical Leave</option>
-                                <option value="OTHER">Other</option>
-                            </select>
-                        </div>
+                                {loading
+                                    ? "Submitting..."
+                                    : "Submit Leave Request"}
+                            </button>
 
-                        <div className="date-row">
+                        </form>
 
-                            <div className="form-group">
-                                <label>Start Date</label>
+                    </div>
 
-                                <input
-                                    type="date"
-                                    name="startDate"
-                                    value={formData.startDate}
-                                    onChange={handleChange}
-                                    required
-                                />
+
+                    {/* =================================
+                        LEAVE HISTORY
+                    ================================= */}
+
+                    <div className="leave-card history-card">
+
+                        <div className="history-card-header">
+
+                            <div>
+
+                                <span className="section-label">
+                                    RECORDS
+                                </span>
+
+                                <h2>
+                                    My Leave Requests
+                                </h2>
+
+                                <p>
+                                    View the status of your previous requests.
+                                </p>
+
                             </div>
 
-                            <div className="form-group">
-                                <label>End Date</label>
+                            <span className="request-count">
+                                {leaveRequests.length}{" "}
+                                {leaveRequests.length === 1
+                                    ? "request"
+                                    : "requests"}
+                            </span>
 
-                                <input
-                                    type="date"
-                                    name="endDate"
-                                    value={formData.endDate}
-                                    onChange={handleChange}
-                                    required
-                                />
+                        </div>
+
+
+                        {leaveRequests.length === 0 ? (
+
+                            <div className="empty-state">
+
+                                <div className="empty-icon">
+                                    ▤
+                                </div>
+
+                                <h3>
+                                    No leave requests
+                                </h3>
+
+                                <p>
+                                    Your submitted leave requests
+                                    will appear here.
+                                </p>
+
                             </div>
 
-                        </div>
+                        ) : (
 
-                        <div className="form-group">
-                            <label>Reason</label>
+                            <div className="leave-table-wrapper">
 
-                            <textarea
-                                name="reason"
-                                value={formData.reason}
-                                onChange={handleChange}
-                                placeholder="Enter reason for leave"
-                                maxLength="500"
-                                rows="4"
-                                required
-                            />
-                        </div>
+                                <table className="leave-table">
 
-                        <button
-                            type="submit"
-                            className="submit-button"
-                            disabled={loading}
-                        >
-                            {loading ? "Submitting..." : "Submit Leave Request"}
-                        </button>
+                                    <thead>
 
-                    </form>
-                </div>
+                                    <tr>
 
-                {/* Leave History */}
-                <div className="leave-card">
+                                        <th>
+                                            TYPE
+                                        </th>
 
-                    <h2>My Leave Requests</h2>
+                                        <th>
+                                            START
+                                        </th>
 
-                    {leaveRequests.length === 0 ? (
-                        <div className="empty-state">
-                            No leave requests found.
-                        </div>
-                    ) : (
-                        <div className="leave-table-wrapper">
+                                        <th>
+                                            END
+                                        </th>
 
-                            <table className="leave-table">
+                                        <th>
+                                            REASON
+                                        </th>
 
-                                <thead>
-                                <tr>
-                                    <th>Type</th>
-                                    <th>Start</th>
-                                    <th>End</th>
-                                    <th>Reason</th>
-                                    <th>Status</th>
-                                </tr>
-                                </thead>
-
-                                <tbody>
-
-                                {leaveRequests.map((leave) => (
-                                    <tr key={leave.id}>
-
-                                        <td>{leave.leaveType}</td>
-
-                                        <td>{leave.startDate}</td>
-
-                                        <td>{leave.endDate}</td>
-
-                                        <td>{leave.reason}</td>
-
-                                        <td>
-                                                <span
-                                                    className={`status-badge ${getStatusClass(
-                                                        leave.status
-                                                    )}`}
-                                                >
-                                                    {leave.status}
-                                                </span>
-                                        </td>
+                                        <th>
+                                            STATUS
+                                        </th>
 
                                     </tr>
-                                ))}
 
-                                </tbody>
+                                    </thead>
 
-                            </table>
+                                    <tbody>
 
-                        </div>
-                    )}
+                                    {leaveRequests.map(
+                                        (leave) => (
+
+                                            <tr
+                                                key={leave.id}
+                                            >
+
+                                                <td>
+                                                        <span className="leave-type">
+                                                            {leave.leaveType}
+                                                        </span>
+                                                </td>
+
+                                                <td>
+                                                    {leave.startDate}
+                                                </td>
+
+                                                <td>
+                                                    {leave.endDate}
+                                                </td>
+
+                                                <td className="reason-cell">
+                                                    {leave.reason}
+                                                </td>
+
+                                                <td>
+
+                                                        <span
+                                                            className={`status-badge ${getStatusClass(
+                                                                leave.status
+                                                            )}`}
+                                                        >
+                                                            {leave.status}
+                                                        </span>
+
+                                                </td>
+
+                                            </tr>
+
+                                        )
+                                    )}
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+                        )}
+
+                    </div>
 
                 </div>
 
-            </div>
+            </main>
 
         </div>
     );

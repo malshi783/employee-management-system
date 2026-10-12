@@ -94,7 +94,7 @@ function App() {
                 <Route path="/support"
                        element={<ProtectedRoute>
                            <Support />
-                </ProtectedRoute>} />
+                       </ProtectedRoute>} />
                 <Route
                     path="/support-management"
                     element={
