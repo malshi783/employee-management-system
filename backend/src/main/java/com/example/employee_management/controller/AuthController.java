@@ -115,16 +115,10 @@ public class AuthController {
             userRepository.save(user);
         }
 
-        String token = jwtService.generateToken(
-                user.getEmail(),
-                normalizedRole
-        );
+        String email = user.getEmail();
+        String token = jwtService.generateToken(email, normalizedRole);
 
-        LoginResponseDto response = new LoginResponseDto(
-                token,
-                user.getEmail(),
-                normalizedRole
-        );
+        LoginResponseDto response = new LoginResponseDto(token, email, normalizedRole);
 
         return ResponseEntity.ok(response);
     }
