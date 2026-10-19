@@ -17,10 +17,6 @@ function LeaveRequest() {
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
 
-    useEffect(() => {
-        fetchLeaveRequests();
-    }, []);
-
     const fetchLeaveRequests = async () => {
         try {
             const response = await api.get("/leaves/me");
@@ -30,6 +26,20 @@ function LeaveRequest() {
             setError("Failed to load leave requests.");
         }
     };
+
+    useEffect(() => {
+        const loadLeaveRequests = async () => {
+            try {
+                const response = await api.get("/leaves/me");
+                setLeaveRequests(response.data);
+            } catch (err) {
+                console.error(err);
+                setError("Failed to load leave requests.");
+            }
+        };
+
+        void loadLeaveRequests();
+    }, []);
 
     const handleChange = (e) => {
         setFormData({

@@ -313,6 +313,26 @@
     font-weight: 800;
 }
 
+/* =========================================
+   BRAND ILLUSTRATION
+========================================= */
+
+.brand-illustration {
+    display: flex;
+
+    justify-content: flex-end;
+
+    margin-top: 12px;
+}
+
+.brand-illustration img {
+    display: block;
+
+    width: min(100%, 210px);
+
+    height: auto;
+}
+
 
 /* =========================================
    BRAND FOOTER

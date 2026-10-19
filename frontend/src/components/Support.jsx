@@ -23,7 +23,19 @@ function Support() {
     };
 
     useEffect(() => {
-        loadRequests();
+        const fetchRequests = async () => {
+            try {
+                const response = await api.get("/support/me");
+                setRequests(response.data);
+            } catch (error) {
+                console.error(
+                    "Error loading support requests:",
+                    error
+                );
+            }
+        };
+
+        void fetchRequests();
     }, []);
 
     const handleSubmit = async (e) => {

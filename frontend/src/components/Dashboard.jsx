@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/api";
+import api, { API_BASE_URL } from "../api/api";
 import Sidebar from "./Sidebar";
 
 import "./Dashboard.css";
@@ -235,7 +235,7 @@ function Dashboard() {
 
                                 {currentUser?.profilePhotoUrl ? (
                                     <img
-                                        src={`http://localhost:8080${currentUser.profilePhotoUrl}`}
+                                        src={`${API_BASE_URL}${currentUser.profilePhotoUrl}`}
                                         alt="Profile"
                                     />
                                 ) : (
@@ -302,7 +302,7 @@ function Dashboard() {
 
                                 {currentUser?.profilePhotoUrl ? (
                                     <img
-                                        src={`http://localhost:8080${currentUser.profilePhotoUrl}`}
+                                        src={`${API_BASE_URL}${currentUser.profilePhotoUrl}`}
                                         alt="Profile"
                                     />
                                 ) : (
@@ -640,7 +640,7 @@ function Dashboard() {
 
                                 {currentUser?.profilePhotoUrl ? (
                                     <img
-                                        src={`http://localhost:8080${currentUser.profilePhotoUrl}`}
+                                        src={`${API_BASE_URL}${currentUser.profilePhotoUrl}`}
                                         alt="Profile"
                                     />
                                 ) : (
@@ -761,7 +761,7 @@ function Dashboard() {
 
                                         {currentUser?.profilePhotoUrl ? (
                                             <img
-                                                src={`http://localhost:8080${currentUser.profilePhotoUrl}`}
+                                                src={`${API_BASE_URL}${currentUser.profilePhotoUrl}`}
                                                 alt="Profile"
                                             />
                                         ) : (

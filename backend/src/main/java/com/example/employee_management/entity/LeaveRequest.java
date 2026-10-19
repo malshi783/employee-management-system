@@ -1,22 +1,12 @@
 package com.example.employee_management.entity;
 
-import ch.qos.logback.core.status.Status;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
 @Entity
 @Table(name= "leave_requests")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class LeaveRequest {
 
     @Id
@@ -47,4 +37,37 @@ public class LeaveRequest {
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    public LeaveRequest() {
+    }
+
+    public LeaveRequest(Long id, User user, LeaveType leaveType, LocalDate startDate,
+                        LocalDate endDate, String reason, LeaveStatus status,
+                        LocalDateTime createdAt) {
+        this.id = id;
+        this.user = user;
+        this.leaveType = leaveType;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.reason = reason;
+        this.status = status;
+        this.createdAt = createdAt;
+    }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+    public LeaveType getLeaveType() { return leaveType; }
+    public void setLeaveType(LeaveType leaveType) { this.leaveType = leaveType; }
+    public LocalDate getStartDate() { return startDate; }
+    public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
+    public LocalDate getEndDate() { return endDate; }
+    public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
+    public String getReason() { return reason; }
+    public void setReason(String reason) { this.reason = reason; }
+    public LeaveStatus getStatus() { return status; }
+    public void setStatus(LeaveStatus status) { this.status = status; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

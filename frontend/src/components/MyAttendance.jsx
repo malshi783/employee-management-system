@@ -15,47 +15,50 @@ function MyAttendance() {
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [refreshKey, setRefreshKey] = useState(0);
 
     useEffect(() => {
-        fetchAttendance();
-    }, []);
+        const fetchAttendance = async () => {
+            try {
+                const [
+                    attendanceResponse,
+                    statsResponse
+                ] = await Promise.all([
+                    api.get("/attendance/me"),
+                    api.get("/attendance/me/stats")
+                ]);
 
-    const fetchAttendance = async () => {
-        try {
-            setLoading(true);
-            setError("");
+                setAttendance(attendanceResponse.data);
+                setStats(statsResponse.data);
 
-            const [
-                attendanceResponse,
-                statsResponse
-            ] = await Promise.all([
-                api.get("/attendance/me"),
-                api.get("/attendance/me/stats")
-            ]);
-
-            setAttendance(attendanceResponse.data);
-            setStats(statsResponse.data);
-
-        } catch (error) {
-            console.error(
-                "Could not load attendance:",
-                error
-            );
-
-            if (error.response) {
-                setError(
-                    error.response.data?.message ||
-                    "Could not load your attendance."
+            } catch (error) {
+                console.error(
+                    "Could not load attendance:",
+                    error
                 );
-            } else {
-                setError(
-                    "Could not connect to the backend."
-                );
+
+                if (error.response) {
+                    setError(
+                        error.response.data?.message ||
+                        "Could not load your attendance."
+                    );
+                } else {
+                    setError(
+                        "Could not connect to the backend."
+                    );
+                }
+
+            } finally {
+                setLoading(false);
             }
+        };
+        void fetchAttendance();
+    }, [refreshKey]);
 
-        } finally {
-            setLoading(false);
-        }
+    const handleRefresh = () => {
+        setError("");
+        setLoading(true);
+        setRefreshKey((key) => key + 1);
     };
 
     const getStatusClass = (status) => {
@@ -150,7 +153,7 @@ function MyAttendance() {
 
                     <button
                         className="attendance-refresh-button"
-                        onClick={fetchAttendance}
+                        onClick={handleRefresh}
                     >
                         ↻ Refresh
                     </button>

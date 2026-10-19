@@ -9,15 +9,9 @@ function LeaveManagement() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    useEffect(() => {
-        fetchLeaveRequests();
-    }, []);
-
     const fetchLeaveRequests = async () => {
 
         try {
-
-            setLoading(true);
 
             const response = await api.get("/leaves");
 
@@ -42,6 +36,23 @@ function LeaveManagement() {
         }
     };
 
+    useEffect(() => {
+        const loadLeaveRequests = async () => {
+            try {
+                const response = await api.get("/leaves");
+                setLeaveRequests(response.data);
+                setError("");
+            } catch (err) {
+                console.error(err);
+                setError("Failed to load leave requests.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        void loadLeaveRequests();
+    }, []);
+
 
     const updateStatus = async (id, status) => {
 
@@ -51,6 +62,7 @@ function LeaveManagement() {
                 `/leaves/${id}/status?status=${status}`
             );
 
+            setLoading(true);
             await fetchLeaveRequests();
 
         } catch (err) {
