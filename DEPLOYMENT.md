@@ -40,4 +40,6 @@ After deploying the frontend, set `APP_CORS_ALLOWED_ORIGINS` on the API service 
 
 ## 4. Verify
 
-Open the frontend's public URL, sign in, and test API-backed pages and profile photo uploads. Keep `JWT_SECRET` private and use Railway's private MySQL connection values through the service references above.
+Open the frontend's public URL. On a new database, use the initial setup form to create the first administrator; this option is only available while the database has no accounts. Then sign in and test API-backed pages and profile photo uploads.
+
+Keep `JWT_SECRET` private and use Railway's private MySQL connection values through the service references above. If deployment fails, check the API and frontend service logs for missing environment variables, database connection errors, or a CORS origin mismatch.
