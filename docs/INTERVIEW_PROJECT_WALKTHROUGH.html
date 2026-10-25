@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Employee Management System - Internship Interview Walkthrough</title>
+  <style>
+    @page { size: A4; margin: 17mm 16mm 18mm; }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: #1f2937; font: 10pt/1.5 "Segoe UI", Arial, sans-serif; }
+    h1, h2, h3 { color: #10251b; line-height: 1.2; }
+    h1 { margin: 0 0 10px; font-size: 27pt; }
+    h2 { margin: 0 0 12px; padding-bottom: 6px; border-bottom: 2px solid #dcebe1; font-size: 17pt; }
+    h3 { margin: 17px 0 7px; font-size: 12pt; }
+    p { margin: 7px 0; }
+    ul, ol { margin: 6px 0 10px; padding-left: 21px; }
+    li { margin: 3px 0; }
+    code { font: 8.3pt Consolas, "Courier New", monospace; color: #174c32; }
+    .cover { min-height: 245mm; display: flex; flex-direction: column; justify-content: center; }
+    .badge { color: #185c3a; font-size: 9pt; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+    .subtitle { max-width: 145mm; color: #526257; font-size: 14pt; }
+    .coverbox { margin-top: 24px; padding: 18px 20px; border-left: 5px solid #185c3a; background: #f1f7f3; }
+    .small { color: #66736a; font-size: 8.5pt; }
+    .page { page-break-before: always; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+    .card { padding: 12px 13px; border: 1px solid #dfe8e2; border-radius: 8px; background: #fbfdfb; }
+    .card h3 { margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 9px 0 14px; font-size: 8.8pt; }
+    th { color: #fff; background: #185c3a; text-align: left; }
+    th, td { padding: 7px 8px; border: 1px solid #dce5df; vertical-align: top; }
+    tr:nth-child(even) td { background: #f7faf8; }
+    .flow { margin: 13px 0; padding: 11px 14px; border-radius: 8px; background: #eef6f0; color: #185c3a; font-weight: 700; text-align: center; }
+    figure { margin: 13px auto; text-align: center; page-break-inside: avoid; }
+    figure img { max-width: 100%; max-height: 112mm; object-fit: contain; border: 1px solid #d7dfd9; border-radius: 5px; }
+    figcaption { margin-top: 5px; color: #66736a; font-size: 8pt; }
+    .callout { padding: 10px 12px; border-left: 4px solid #c18b26; background: #fff8e7; }
+    .good { border-left-color: #185c3a; background: #f1f7f3; }
+    .codebox { padding: 9px 11px; background: #f4f6f5; border: 1px solid #dfe5e1; border-radius: 6px; font: 8.5pt/1.5 Consolas, monospace; white-space: pre-wrap; }
+    .footer { position: fixed; bottom: -12mm; left: 0; right: 0; color: #78837b; font-size: 8pt; border-top: 1px solid #dce5df; padding-top: 4px; }
+    .nowrap { white-space: nowrap; }
+  </style>
+</head>
+<body>
+  <section class="cover">
+    <div class="badge">Internship Interview Preparation</div>
+    <h1>Employee Management System</h1>
+    <p class="subtitle">A practical walkthrough of what the application does, how the important features work, and where to find the code.</p>
+    <div class="coverbox">
+      <strong>Project in one sentence</strong>
+      <p>A full-stack HR workflow app with administrator and employee roles, built with React, Spring Boot, MySQL, and JWT security.</p>
+    </div>
+    <p style="margin-top:35px"><strong>Prepared for:</strong> Internship interview practice</p>
+    <p class="small">Use fictional demo accounts and data. Do not show passwords, access tokens, or employee personal details.</p>
+    <p class="small" style="margin-top:45px">Project root:<br><code>C:\Users\MALSHI\OneDrive - NSBM\Desktop\My Employee Management System\employee-management-system</code></p>
+  </section>
+
+  <section class="page">
+    <h2>1. Project overview</h2>
+    <p>This application brings employee account management and basic HR workflows into one web app. Administrators manage employee records and requests; employees use self-service pages for their own information.</p>
+    <div class="grid">
+      <div class="card"><h3>Administrator</h3><ul><li>Create, search, update, and delete employee accounts.</li><li>Record or update attendance by employee and date.</li><li>Review leave requests.</li><li>Review and resolve support requests.</li></ul></div>
+      <div class="card"><h3>Employee</h3><ul><li>View own profile and dashboard.</li><li>View personal attendance history and summary.</li><li>Submit leave requests.</li><li>Submit support requests.</li></ul></div>
+    </div>
+    <h3>Technology stack</h3>
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr>
+      <tr><td>Frontend</td><td>React, JSX, React Router</td><td>UI components, page state, and navigation.</td></tr>
+      <tr><td>HTTP client/build</td><td>Axios, Vite, ESLint</td><td>API calls, local dev/production build, linting.</td></tr>
+      <tr><td>Backend</td><td>Java 25, Spring Boot, Spring Web</td><td>REST endpoints and application services.</td></tr>
+      <tr><td>Persistence</td><td>Spring Data JPA, Hibernate, MySQL</td><td>Mapping entities and saving application data.</td></tr>
+      <tr><td>Security</td><td>Spring Security, JWT, BCrypt</td><td>Authentication, role checks, password hashing.</td></tr>
+      <tr><td>Tests</td><td>H2, Maven Wrapper</td><td>Repeatable backend tests without local MySQL.</td></tr>
+    </table>
+    <h3>30-second introduction</h3>
+    <div class="callout good">“I built a full-stack Employee Management System for common HR workflows. Admins manage employee accounts, attendance, leave, and support requests, while employees see their own information and submit requests. The frontend is React; the backend is a Java Spring Boot REST API using MySQL. I use JWT authentication and role-based authorization to separate the two experiences.”</div>
+  </section>
+
+  <section class="page">
+    <h2>2. How the application works</h2>
+    <div class="flow">React page → Axios request → Spring Security/JWT → Controller → Service → Repository/JPA → MySQL</div>
+    <ol>
+      <li>User interacts with a React page.</li>
+      <li>Axios sends JSON to an <code>/api/...</code> endpoint and attaches the bearer token for protected calls.</li>
+      <li>Spring Security validates the JWT and role.</li>
+      <li>Controller receives the HTTP request and calls a service.</li>
+      <li>Service applies workflow rules and calls a Spring Data repository.</li>
+      <li>JPA/Hibernate reads or updates MySQL; the API returns JSON to React.</li>
+    </ol>
+    <h3>Terms to explain</h3>
+    <table>
+      <tr><th>Term</th><th>Simple explanation</th></tr>
+      <tr><td>Authentication</td><td>Establishing who the user is.</td></tr>
+      <tr><td>Authorization</td><td>Checking what that user is allowed to do.</td></tr>
+      <tr><td>Controller</td><td>Maps HTTP requests to application operations and responses.</td></tr>
+      <tr><td>Service</td><td>Holds workflow/application logic.</td></tr>
+      <tr><td>Repository</td><td>Provides data access operations.</td></tr>
+      <tr><td>Entity</td><td>Java representation of persisted data/table.</td></tr>
+      <tr><td>DTO</td><td>Defines the data received from or returned to the API client.</td></tr>
+    </table>
+    <h3>Original attendance troubleshooting screenshots</h3>
+    <p class="small">These are the screenshots shared during troubleshooting. They show the state at that time, not a guarantee of the current build or data.</p>
+    <figure><img src="interview-images/employee-attendance-before.png" alt="Employee attendance page with no saved records"><figcaption>Employee page showed no saved attendance records. The app requires an administrator to enter attendance.</figcaption></figure>
+  </section>
+
+  <section class="page">
+    <h2>3. Main files: attendance feature</h2>
+    <table>
+      <tr><th>File (repository-relative)</th><th>Added or changed</th><th>What it does</th></tr>
+      <tr><td><code>frontend/src/components/AttendanceManagement.jsx</code></td><td>Added</td><td>Admin screen: date selection, employee search, status selection, save action, daily counts.</td></tr>
+      <tr><td><code>frontend/src/components/AttendanceManagement.css</code></td><td>Added</td><td>Styles the admin attendance screen.</td></tr>
+      <tr><td><code>frontend/src/App.jsx</code></td><td>Changed</td><td>Registers the <code>/attendance-management</code> page route.</td></tr>
+      <tr><td><code>frontend/src/components/Sidebar.jsx</code></td><td>Changed</td><td>Adds an admin Attendance menu item.</td></tr>
+      <tr><td><code>backend/.../controller/AttendanceController.java</code></td><td>Changed</td><td>Adds admin-only date-filtered GET; existing POST saves attendance.</td></tr>
+      <tr><td><code>backend/.../service/AttendanceService.java</code></td><td>Changed</td><td>Loads attendance records for a chosen date; save-or-update logic is reused.</td></tr>
+      <tr><td><code>backend/.../repository/AttendanceRepository.java</code></td><td>Changed</td><td>Adds lookup by date.</td></tr>
+      <tr><td><code>backend/.../dto/AttendanceRequestDto.java</code></td><td>Changed</td><td>Validates required fields, positive employee ID, and non-future date.</td></tr>
+      <tr><td><code>backend/src/test/.../EmployeeManagementApplicationTests.java</code></td><td>Changed</td><td>Contains backend integration tests, including attendance workflows.</td></tr>
+    </table>
+    <h3>Attendance request sequence</h3>
+    <ol>
+      <li>Admin selects date; frontend fetches <code>GET /api/users</code> and <code>GET /api/attendance?date=...</code>.</li>
+      <li>Admin selects Present, Late, or Absent and saves.</li>
+      <li>Frontend posts <code>{userId, date, status}</code> to <code>POST /api/attendance</code>.</li>
+      <li>Backend validates and creates or updates the employee's record for that day.</li>
+      <li>Employee sees their own history at <code>GET /api/attendance/me</code>.</li>
+    </ol>
+    <div class="callout">Attendance is admin-entered. There is no clock-in/out or automatic absence detection. An unmarked date is not silently treated as Absent.</div>
+    <figure><img src="interview-images/attendance-admin-before.png" alt="Attendance admin route screenshot from troubleshooting"><figcaption>Second user-shared troubleshooting image; captured during the earlier test session.</figcaption></figure>
+  </section>
+
+  <section class="page">
+    <h2>4. Other project and documentation files</h2>
+    <table>
+      <tr><th>File</th><th>Purpose</th></tr>
+      <tr><td><code>README.md</code> (repository root)</td><td>Project overview, local setup, tests, API, security and interview documentation links.</td></tr>
+      <tr><td><code>DEPLOYMENT.md</code></td><td>Documents deployment.</td></tr>
+      <tr><td><code>docs/INTERVIEW_DEMO.md</code></td><td>Short live demo plan and checklist.</td></tr>
+      <tr><td><code>docs/INTERVIEW_PREPARATION.md</code></td><td>Project introduction, technology explanations, common questions, practice plan.</td></tr>
+      <tr><td><code>docs/INTERVIEW_PROJECT_WALKTHROUGH.md</code></td><td>Source notes for this PDF.</td></tr>
+      <tr><td><code>docs/INTERVIEW_PROJECT_WALKTHROUGH.pdf</code></td><td>Printable copy of this walkthrough.</td></tr>
+      <tr><td><code>docs/interview-images/</code></td><td>Copies of the two attendance troubleshooting screenshots used in this guide.</td></tr>
+    </table>
+    <h3>How to find files in VS Code</h3>
+    <ol>
+      <li>Open the repository root folder.</li>
+      <li>Press <strong>Ctrl+P</strong>.</li>
+      <li>Type a name, for example <code>AttendanceManagement.jsx</code>.</li>
+      <li>To trace a feature, start at its frontend component, then inspect the controller, service, DTO, and repository.</li>
+    </ol>
+    <h3>Useful concepts when asked “how did you do it?”</h3>
+    <ul>
+      <li>Explain the user action and request payload.</li>
+      <li>Explain which backend layer receives it and where validation happens.</li>
+      <li>Explain what repository/database operation takes place.</li>
+      <li>Explain the response/error returned to the user.</li>
+      <li>State one limitation honestly and one next step.</li>
+    </ul>
+  </section>
+
+  <section class="page">
+    <h2>5. Run, test, and present</h2>
+    <h3>Startup error shown in the terminal</h3>
+    <div class="callout">The log says <code>Could not resolve placeholder 'JWT_SECRET' in value "${JWT_SECRET}"</code>. This is the immediate startup problem: the backend requires a JWT signing secret.</div>
+    <h3>Start backend (PowerShell, from repository root)</h3>
+    <div class="codebox">cd .\backend
+$env:DB_URL = "jdbc:mysql://localhost:3306/employee_management?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC"
+$env:DB_USERNAME = "your-mysql-username"
+$env:DB_PASSWORD = "your-mysql-password"
+$jwtBytes = New-Object byte[] 48
+[Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($jwtBytes)
+$env:JWT_SECRET = [Convert]::ToBase64String($jwtBytes)
+.\mvnw.cmd spring-boot:run</div>
+    <p class="small">Use your own local MySQL username/password; ensure MySQL is running and the database exists. Set these in the same PowerShell window before running Spring. A new terminal has a fresh environment. Never share or commit secrets.</p>
+    <h3>If it still fails</h3>
+    <ul>
+      <li><code>JWT_SECRET</code> placeholder: set the generated secret above.</li>
+      <li>Database connection/access denied: verify MySQL is running and credentials/database are correct.</li>
+    </ul>
+    <h3>Start frontend (second terminal)</h3>
+    <div class="codebox">cd .\frontend
+npm run dev</div>
+    <h3>Run checks</h3>
+    <div class="codebox"># backend
+cd .\backend
+.\mvnw.cmd test
+
+# frontend
+cd .\frontend
+npm run lint
+npm run build</div>
+    <h3>Likely questions</h3>
+    <ul>
+      <li><strong>What did you build?</strong> A full-stack employee/HR workflow app with admin and employee roles.</li>
+      <li><strong>How does a request reach the database?</strong> React/Axios → API/security → controller → service → repository/JPA → MySQL.</li>
+      <li><strong>Why was attendance empty?</strong> No records existed; an administrator must enter them manually.</li>
+      <li><strong>What would you improve?</strong> Add workflow/role tests, attendance audit history, and CI checks.</li>
+    </ul>
+    <div class="callout good">You do not need to memorize this PDF. Practise explaining the idea in your own words. If you do not know an answer, say what you know and how you would verify the rest.</div>
+  </section>
+  <div class="footer">Employee Management System · Internship Interview Walkthrough · Use fictional demo data only</div>
+</body>
+</html>

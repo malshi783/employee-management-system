@@ -8,6 +8,7 @@ import EditEmployee from "./components/EditEmployee";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MyProfile from "./components/MyProfile";
 import MyAttendance from "./components/MyAttendance";
+import AttendanceManagement from "./components/AttendanceManagement";
 import LeaveRequest from "./components/LeaveRequest";
 import LeaveManagement from "./components/LeaveManagement";
 import Support from "./components/Support";
@@ -70,6 +71,15 @@ function App() {
                     element={
                         <ProtectedRoute>
                             <MyAttendance />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/attendance-management"
+                    element={
+                        <ProtectedRoute>
+                            <AttendanceManagement />
                         </ProtectedRoute>
                     }
                 />
