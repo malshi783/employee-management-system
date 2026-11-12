@@ -121,6 +121,8 @@ npm run lint
 npm run build
 ```
 
+GitHub Actions runs the backend tests and frontend lint/build on pushes and pull requests.
+
 ## API overview
 
 All application endpoints use the `/api` prefix. Protected endpoints require a valid bearer token and the appropriate role.
