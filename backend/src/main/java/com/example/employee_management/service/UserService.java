@@ -8,18 +8,14 @@ import com.example.employee_management.dto.UserResponseDto;
 import com.example.employee_management.entity.User;
 import com.example.employee_management.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -273,14 +269,6 @@ public class UserService {
             );
         }
 
-        byte[] imageBytes = file.getBytes();
-        if (!hasMatchingImageSignature(imageBytes, contentType)) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "The uploaded file content does not match its image type."
-            );
-        }
-
 
         // =========================
         // CREATE UPLOAD DIRECTORY
@@ -348,10 +336,9 @@ public class UserService {
         // SAVE NEW PHOTO
         // =========================
 
-        Files.write(
-                filePath,
-                imageBytes,
-                StandardOpenOption.CREATE_NEW
+        Files.copy(
+                file.getInputStream(),
+                filePath
         );
 
 
@@ -415,38 +402,5 @@ public class UserService {
                 user.getRole(),
                 user.getProfilePhotoUrl()
         );
-    }
-
-    private boolean hasMatchingImageSignature(
-            byte[] bytes,
-            String contentType
-    ) {
-        return switch (contentType) {
-            case "image/jpeg" ->
-                    bytes.length >= 3
-                            && bytes[0] == (byte) 0xFF
-                            && bytes[1] == (byte) 0xD8
-                            && bytes[2] == (byte) 0xFF;
-            case "image/png" ->
-                    bytes.length >= 8
-                            && Arrays.equals(
-                                    Arrays.copyOf(bytes, 8),
-                                    new byte[]{
-                                            (byte) 0x89, 0x50, 0x4E, 0x47,
-                                            0x0D, 0x0A, 0x1A, 0x0A
-                                    }
-                            );
-            case "image/webp" ->
-                    bytes.length >= 12
-                            && bytes[0] == 'R'
-                            && bytes[1] == 'I'
-                            && bytes[2] == 'F'
-                            && bytes[3] == 'F'
-                            && bytes[8] == 'W'
-                            && bytes[9] == 'E'
-                            && bytes[10] == 'B'
-                            && bytes[11] == 'P';
-            default -> false;
-        };
     }
 }

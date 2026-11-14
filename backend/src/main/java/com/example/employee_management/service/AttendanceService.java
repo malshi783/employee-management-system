@@ -75,10 +75,6 @@ public class AttendanceService {
                 .findByUserOrderByDateDesc(user);
     }
 
-    public List<Attendance> getAttendanceByDate(LocalDate date) {
-        return attendanceRepository.findByDate(date);
-    }
-
 
     // =========================
     // GET ATTENDANCE FOR DATE

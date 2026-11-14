@@ -1,46 +1,33 @@
-# Railway Deployment
+# Employee Management System — Setup & Deployment
 
-This repository deploys as three Railway services: a MySQL database, the Spring Boot API, and the React frontend.
+## Backend (Railway) environment variables
 
-## 1. Create the services
+Configure these on the Spring Boot backend service:
 
-Create a Railway project from this GitHub repository and add a MySQL service. Add two services from the same repository:
+| Variable | Value |
+|---|---|
+| `DB_URL` | `jdbc:mysql://${{MySQL.MYSQLHOST}}:${{MySQL.MYSQLPORT}}/${{MySQL.MYSQLDATABASE}}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC` |
+| `DB_USERNAME` | `${{MySQL.MYSQLUSER}}` |
+| `DB_PASSWORD` | `${{MySQL.MYSQLPASSWORD}}` |
+| `JWT_SECRET` | Newly generated private random secret (at least 32 random bytes) |
+| `JWT_EXPIRATION` | `86400000` |
+| `APP_CORS_ALLOWED_ORIGINS` | `https://YOUR-VERCEL-DOMAIN.vercel.app` |
 
-- API service: set the root directory to `/backend` and expose a public domain.
-- Frontend service: set the root directory to `/frontend` and expose a public domain.
+The Railway database service must be named `MySQL` for the references above. If it has a different name, update the references. Never commit real credentials.
 
-Each application service uses its directory's Dockerfile.
+## Frontend (Vercel) environment variable
 
-The API Dockerfile builds and runs the backend on Java 25 (the current LTS release).
+Set `VITE_API_URL` to the backend root URL, e.g. `https://YOUR-RAILWAY-BACKEND-DOMAIN` (without `/api`). Redeploy after changing environment variables.
 
-## 2. Configure the API service
+## Local development
 
-Set these variables on the API service. Replace `MySQL` in the Railway references if your database service has a different name.
+1. Create a MySQL database named `employee_management`.
+2. Set `DB_USERNAME`, `DB_PASSWORD`, and `JWT_SECRET` in your local environment.
+3. From `backend`, run `mvnw.cmd spring-boot:run` on Windows (or `./mvnw spring-boot:run` on macOS/Linux).
+4. From `frontend`, run `npm install`, then `npm run dev`. Optionally set `VITE_API_URL=http://localhost:8080` in `frontend/.env.local`.
 
-```text
-DB_URL=jdbc:mysql://${{MySQL.MYSQLHOST}}:${{MySQL.MYSQLPORT}}/${{MySQL.MYSQLDATABASE}}
-DB_USERNAME=${{MySQL.MYSQLUSER}}
-DB_PASSWORD=${{MySQL.MYSQLPASSWORD}}
-JWT_SECRET=<a random secret of at least 32 characters>
-JWT_EXPIRATION=86400000
-APP_CORS_ALLOWED_ORIGINS=<your frontend public URL>
-```
+## Important
 
-Add a Railway volume to the API service and mount it at `/app/uploads`. Profile photos are stored there and need persistent storage to survive deploys.
-
-## 3. Configure the frontend service
-
-Set this build variable on the frontend service. Use the API's public URL without a trailing slash or `/api` suffix.
-The frontend Docker build requires this value and fails rather than silently shipping a production bundle pointed at localhost. Changing the API URL requires a new frontend build/deploy.
-
-```text
-VITE_API_BASE_URL=https://<your-api-domain>
-```
-
-After deploying the frontend, set `APP_CORS_ALLOWED_ORIGINS` on the API service to the frontend's exact public origin, then redeploy the API.
-
-## 4. Verify
-
-Open the frontend's public URL. On a new database, use the initial setup form to create the first administrator; this option is only available while the database has no accounts. Then sign in and test API-backed pages and profile photo uploads.
-
-Use fictional demo accounts and data only; do not put real employee information in a portfolio deployment. Keep `JWT_SECRET` private and use Railway's private MySQL connection values through the service references above. If deployment fails, check the API and frontend service logs for missing environment variables, database connection errors, or a CORS origin mismatch.
+- Rotate any database password or JWT secret previously committed, shared, or included in an archive.
+- This source archive excludes database contents and user accounts. Existing production data remains in the deployed database.
+- Test login, employee management, attendance, leave requests, profile updates/uploads, and support requests after deployment.

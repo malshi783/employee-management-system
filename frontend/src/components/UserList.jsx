@@ -44,24 +44,7 @@ function UserList() {
 
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const response = await api.get("/users");
-                setUsers(response.data);
-            } catch (error) {
-                console.error(
-                    "Error loading users:",
-                    error
-                );
-                setMessage(
-                    "Failed to load employees."
-                );
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        void fetchUsers();
+        loadUsers();
     }, []);
 
 

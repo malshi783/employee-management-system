@@ -10,12 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/attendance")
@@ -28,22 +26,6 @@ public class AttendanceController {
     // ==========================================
     // ADMIN - MARK / UPDATE ATTENDANCE
     // ==========================================
-
-    @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<AttendanceResponseDto>> getAttendanceForDate(
-            @RequestParam
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate date
-    ) {
-        List<AttendanceResponseDto> response =
-                attendanceService.getAttendanceByDate(date)
-                        .stream()
-                        .map(this::convertToResponseDto)
-                        .toList();
-
-        return ResponseEntity.ok(response);
-    }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")

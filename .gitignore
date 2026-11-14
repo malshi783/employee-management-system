@@ -1,76 +1,23 @@
-# ==============================
-# IntelliJ IDEA
-# ==============================
-.idea/
-*.iws
-*.iml
-*.ipr
-
-# ==============================
-# Spring Boot / Maven
-# ==============================
-target/
-!**/src/main/**/target/
-!**/src/test/**/target/
-
-.mvn/wrapper/maven-wrapper.jar
-
-# ==============================
-# Environment / Secrets
-# ==============================
-backend/env
-backend/.env
-backend/src/main/resources/application.properties
-backend/target/
-backend/*.log
-backend/uploads/
-
-# ==============================
-# Logs
-# ==============================
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+**/target/
+*.class
+*.jar
 *.log
-
-# ==============================
-# Uploaded files
-# ==============================
-uploads/
-
-# ==============================
-# Frontend
-# ==============================
-frontend/node_modules/
-frontend/dist/
-
-# ==============================
-# VS Code
-# ==============================
+**/node_modules/
+**/dist/
+npm-debug.log*
+.idea/
 .vscode/
-
-# ==============================
-# STS / Eclipse
-# ==============================
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings/
-.springBeans
-.sts4-cache
-
-# ==============================
-# NetBeans
-# ==============================
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-# ==============================
-# OS
-# ==============================
+*.iml
+*.iws
+*.ipr
+*.swp
 .DS_Store
 Thumbs.db
+uploads/*
+!uploads/.gitkeep

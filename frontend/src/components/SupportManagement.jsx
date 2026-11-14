@@ -44,24 +44,7 @@ function SupportManagement() {
 
 
     useEffect(() => {
-        const fetchRequests = async () => {
-            try {
-                const response = await api.get("/support");
-                setRequests(response.data);
-            } catch (error) {
-                console.error(
-                    "Error loading support requests:",
-                    error
-                );
-                setMessage(
-                    "Failed to load support requests."
-                );
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        void fetchRequests();
+        loadRequests();
     }, []);
 
 

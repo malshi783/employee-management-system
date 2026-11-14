@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api, { API_BASE_URL } from "../api/api";
+import api from "../api/api";
 import Sidebar from "./Sidebar";
 
 import "./Dashboard.css";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
+const BACKEND_URL = API_BASE_URL.replace(/\/api\/?$/, "");
 
 
 function Dashboard() {
@@ -235,7 +237,7 @@ function Dashboard() {
 
                                 {currentUser?.profilePhotoUrl ? (
                                     <img
-                                        src={`${API_BASE_URL}${currentUser.profilePhotoUrl}`}
+                                        src={`${BACKEND_URL}${currentUser.profilePhotoUrl}`}
                                         alt="Profile"
                                     />
                                 ) : (
@@ -302,7 +304,7 @@ function Dashboard() {
 
                                 {currentUser?.profilePhotoUrl ? (
                                     <img
-                                        src={`${API_BASE_URL}${currentUser.profilePhotoUrl}`}
+                                        src={`${BACKEND_URL}${currentUser.profilePhotoUrl}`}
                                         alt="Profile"
                                     />
                                 ) : (
@@ -640,7 +642,7 @@ function Dashboard() {
 
                                 {currentUser?.profilePhotoUrl ? (
                                     <img
-                                        src={`${API_BASE_URL}${currentUser.profilePhotoUrl}`}
+                                        src={`${BACKEND_URL}${currentUser.profilePhotoUrl}`}
                                         alt="Profile"
                                     />
                                 ) : (
@@ -761,7 +763,7 @@ function Dashboard() {
 
                                         {currentUser?.profilePhotoUrl ? (
                                             <img
-                                                src={`${API_BASE_URL}${currentUser.profilePhotoUrl}`}
+                                                src={`${BACKEND_URL}${currentUser.profilePhotoUrl}`}
                                                 alt="Profile"
                                             />
                                         ) : (

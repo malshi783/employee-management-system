@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api, { API_BASE_URL } from "../api/api";
+import api from "../api/api";
 import Sidebar from "./Sidebar";
 import "./MyProfile.css";
 
@@ -24,27 +24,27 @@ function MyProfile() {
     // =================================
 
     useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const response = await api.get("/profile/me");
-
-                setProfile(response.data);
-                setName(response.data.name || "");
-                setEmail(response.data.email || "");
-
-            } catch (error) {
-                console.error("Could not load profile:", error);
-                setError(
-                    "Could not load your profile. Please try again."
-                );
-
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        void fetchProfile();
+        fetchProfile();
     }, []);
+
+    const fetchProfile = async () => {
+        try {
+
+            const response = await api.get("/profile/me");
+            setProfile(response.data);
+            setName(response.data.name || "");
+            setEmail(response.data.email || "");
+
+        } catch (error) {
+            console.error("Could not load profile:", error);
+            setError(
+                "Could not load your profile. Please try again."
+            );
+
+        } finally {
+            setLoading(false);
+        }
+    };
 
 
     // =================================
@@ -170,7 +170,8 @@ function MyProfile() {
             const token = localStorage.getItem("token");
 
             const response = await fetch(
-                `${API_BASE_URL}/api/profile/me/photo`,
+                `${import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api"}/profile/me/photo`,
+
                 {
                     method: "POST",
 
@@ -223,12 +224,17 @@ function MyProfile() {
     // PROFILE PHOTO URL
     // =================================
 
+    const API_BASE_URL =
+        import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
+
+    const BACKEND_URL = API_BASE_URL.replace(/\/api\/?$/, "");
+
     const getProfilePhotoUrl = () => {
         if (!profile?.profilePhotoUrl) {
             return null;
         }
 
-        return `${API_BASE_URL}${profile.profilePhotoUrl}`;
+        return `${BACKEND_URL}${profile.profilePhotoUrl}`;
     };
 
 

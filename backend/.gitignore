@@ -19,7 +19,7 @@ target/
 # Environment / Secrets
 # ==============================
 .env
-env
+.env
 src/main/resources/application.properties
 target/
 *.log

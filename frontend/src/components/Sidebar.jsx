@@ -80,16 +80,6 @@ function Sidebar() {
 
                         <button
                             className={`sidebar-link ${
-                                isActive("/attendance-management") ? "active" : ""
-                            }`}
-                            onClick={() => navigate("/attendance-management")}
-                        >
-                            <span className="sidebar-icon">✓</span>
-                            <span>Attendance</span>
-                        </button>
-
-                        <button
-                            className={`sidebar-link ${
                                 isActive("/leave-management")
                                     ? "active"
                                     : ""
