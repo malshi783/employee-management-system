@@ -1,5 +1,4 @@
 .git
 target
 uploads
-src/main/resources/application.properties
 *.log
