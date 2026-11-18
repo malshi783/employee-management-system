@@ -20,7 +20,6 @@ target/
 # ==============================
 .env
 .env
-src/main/resources/application.properties
 target/
 *.log
 uploads/
