@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Login from "./components/Login";
+import InitialAdminSetup from "./components/InitialAdminSetup";
 import Dashboard from "./components/Dashboard";
 import UserList from "./components/UserList";
 import AddEmployee from "./components/AddEmployee";
@@ -19,6 +20,7 @@ function App() {
             <Routes>
 
                 <Route path="/" element={<Login />} />
+                <Route path="/setup-admin" element={<InitialAdminSetup />} />
 
                 <Route
                     path="/dashboard"

@@ -15,6 +15,8 @@ Configure these on the Spring Boot backend service:
 
 The Railway database service must be named `MySQL` for the references above. If it has a different name, update the references. Never commit real credentials.
 
+On first deployment to an empty database, open the Vercel app and select **Set up the first administrator** on the sign-in page. Create the administrator account there. This one-time option closes automatically once any account exists. If the database already contains an account, sign in with that account instead.
+
 ## Frontend (Vercel) environment variable
 
 Set `VITE_API_URL` to the backend root URL, e.g. `https://YOUR-RAILWAY-BACKEND-DOMAIN` (without `/api`). Redeploy after changing environment variables.

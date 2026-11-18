@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../api/api";
 import "./Login.css";
 
@@ -11,8 +11,27 @@ function Login() {
     const [showPassword, setShowPassword] = useState(false);
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
+    const [setupRequired, setSetupRequired] = useState(false);
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        let cancelled = false;
+
+        api.get("/auth/initial-admin/status")
+            .then(({ data }) => {
+                if (!cancelled) {
+                    setSetupRequired(Boolean(data.setupRequired));
+                }
+            })
+            .catch(() => {
+                if (!cancelled) setSetupRequired(false);
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, []);
 
 
     // =========================================
@@ -318,6 +337,12 @@ function Login() {
                             </button>
 
                         </form>
+
+                        {setupRequired && (
+                            <Link className="setup-admin-link" to="/setup-admin">
+                                Set up the first administrator
+                            </Link>
+                        )}
 
 
 
