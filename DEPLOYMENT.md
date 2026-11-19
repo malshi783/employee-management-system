@@ -23,10 +23,11 @@ Set `VITE_API_URL` to the backend root URL, e.g. `https://YOUR-RAILWAY-BACKEND-D
 
 ## Local development
 
-1. Create a MySQL database named `employee_management`.
-2. Set `DB_USERNAME`, `DB_PASSWORD`, and `JWT_SECRET` in your local environment.
-3. From `backend`, run `mvnw.cmd spring-boot:run` on Windows (or `./mvnw spring-boot:run` on macOS/Linux).
-4. From `frontend`, run `npm install`, then `npm run dev`. Optionally set `VITE_API_URL=http://localhost:8080` in `frontend/.env.local`.
+1. Install Java 25 and use it for the backend build and runtime.
+2. Create a MySQL database named `employee_management`.
+3. Set `DB_USERNAME`, `DB_PASSWORD`, and `JWT_SECRET` in your local environment.
+4. From `backend`, run `mvnw.cmd spring-boot:run` on Windows (or `./mvnw spring-boot:run` on macOS/Linux).
+5. From `frontend`, run `npm install`, then `npm run dev`. Optionally set `VITE_API_URL=http://localhost:8080` in `frontend/.env.local`.
 
 ## Important
 
