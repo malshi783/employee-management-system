@@ -1,0 +1,34 @@
+.setup-brand-panel h1 span {
+    display: block;
+}
+
+.setup-admin-link {
+    display: block;
+    margin-top: 18px;
+    color: var(--dark-green);
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+}
+
+.setup-admin-link:hover {
+    color: var(--green-hover);
+    text-decoration: underline;
+}
+
+.setup-result p {
+    margin-bottom: 22px;
+}
+
+.setup-action {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+@media (max-width: 700px) {
+    .setup-brand-panel h1 span {
+        display: inline;
+    }
+}
